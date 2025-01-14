@@ -7,6 +7,6 @@ import com.example.reviewsplash.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    // 추가적인 쿼리 메서드 정의 가능
     User findByEmail(String email);
+    boolean existsByEmail(String email);
 }

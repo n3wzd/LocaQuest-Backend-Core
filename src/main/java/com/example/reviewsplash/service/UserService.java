@@ -13,15 +13,18 @@ public class UserService {
     private UserRepository userRepository;
 
     public User registerUser(User user) {
-        // 이메일 중복 확인
-        /*if (userRepository.findByEmail(user.getEmail()) != null) {
+        if (isEmailExists(user.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
-        }*/
+        }
 
         // 비밀번호 해싱 (예: BCrypt)
         // String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         // user.setPassword(hashedPassword);
 
         return userRepository.save(user);
+    }
+
+    public boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
