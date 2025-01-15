@@ -2,6 +2,8 @@ package com.example.reviewsplash.model;
 
 import java.time.LocalDateTime;
 
+import com.example.reviewsplash.annotation.PasswordComplexity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,8 +12,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import com.example.reviewsplash.annotation.PasswordComplexity;
 
 @Entity
 @Table(name = "users")
@@ -26,7 +26,7 @@ public class User {
     @Column(nullable = false)
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
-    @Size(max = 255, message = "Password must be less than 255 characters")
+    @Size(max = 60, message = "Password must be less than 60 characters")
     @PasswordComplexity(message = "Password must contain at least one number and one special character")
     private String password;
 

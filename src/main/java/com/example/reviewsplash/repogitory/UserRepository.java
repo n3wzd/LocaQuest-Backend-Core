@@ -8,5 +8,7 @@ import com.example.reviewsplash.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     User findByEmail(String email);
+    User findByUserId(String userId);
     boolean existsByEmail(String email);
+    boolean existsByUserId(String userId);
 }
