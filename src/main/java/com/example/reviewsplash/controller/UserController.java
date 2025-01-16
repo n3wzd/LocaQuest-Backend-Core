@@ -2,7 +2,6 @@ package com.example.reviewsplash.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.reviewsplash.dto.LoginRequest;
 import com.example.reviewsplash.dto.LoginResponse;
+import com.example.reviewsplash.exception.ServiceException;
 import com.example.reviewsplash.model.User;
 import com.example.reviewsplash.service.UserService;
 
@@ -28,9 +28,15 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
-            User registeredUser = userService.registerUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
-        } catch (IllegalArgumentException e) {
+            userService.registerUser(user);
+
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setUserId(user.getUserId());
+            loginRequest.setPassword(user.getPassword());
+
+            String token = userService.authenticate(loginRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(token));
+        } catch (ServiceException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -46,8 +52,20 @@ public class UserController {
         try {
             String token = userService.authenticate(loginRequest);
             return ResponseEntity.ok(new LoginResponse(token));
-        } catch (AuthenticationException e) {
+        } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
+    }
+
+    @GetMapping("/find-id")
+    public ResponseEntity<?> findUserId(@RequestParam String email) {
+        boolean isAvailable = !userService.isEmailExists(email);
+        return ResponseEntity.ok(isAvailable);
+    }
+
+    @GetMapping("/verify-email")
+    public ResponseEntity<?> verifyByEmail(@RequestParam String token) {
+        boolean isAvailable = !userService.isEmailExists(token);
+        return ResponseEntity.ok(isAvailable);
     }
 }

@@ -11,10 +11,7 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final String secretKey = "mySecretKey";
-    private final long validityInMilliseconds = 3600000;
-
-    public String generateToken(String userId) {
+    public String generateToken(String userId, String secretKey, long validityInMilliseconds) {
         Claims claims = Jwts.claims().setSubject(userId);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -27,7 +24,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, String secretKey) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
@@ -36,7 +33,11 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUserId(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    public String getUserId(String token, String secretKey) {
+        try {
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            return "";
+        }
     }
 }
