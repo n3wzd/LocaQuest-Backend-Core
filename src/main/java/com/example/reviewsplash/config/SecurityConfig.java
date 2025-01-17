@@ -23,7 +23,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                    .requestMatchers("/api/users/register", "/api/users/login", "/api/users/find-id").permitAll()
                     .anyRequest().authenticated()
             )
             .formLogin(formLogin ->

@@ -1,10 +1,10 @@
 package com.example.reviewsplash.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.reviewsplash.component.JwtTokenProvider;
 import com.example.reviewsplash.dto.LoginRequest;
@@ -30,21 +30,15 @@ public class UserService {
 
     public User registerUser(User user) {
         if (isEmailExists(user.getEmail())) {
-            String reason = "Email already exists";
-            logger.warn("User registration failed: email={}, reason={}", user.getEmail(), reason);
-            throw new ServiceException(reason);
+            throw new ServiceException("Email already exists");
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-
         try {
             User registerdUser = userRepository.save(user);
-            logger.info("User registered successfully: userId={}, email={}", user.getUserId(), user.getEmail());
             return registerdUser;
         } catch(IllegalArgumentException | OptimisticLockingFailureException e) {
-            String reason = "Database Error";
-            logger.warn("User registration failed: email={}, reason={}", user.getEmail(), reason);
-            throw new ServiceException(reason);
+            throw new ServiceException(String.format("Database Error: %s", e.toString()));
         }
     }
 
@@ -55,36 +49,29 @@ public class UserService {
     public String authenticate(LoginRequest loginRequest) {
         User user = userRepository.findByUserId(loginRequest.getUserId());
         if(user == null) {
-            String reason = "User not found";
-            logger.warn("User login failed: reason={}", reason);
-            throw new ServiceException(reason);
+            throw new ServiceException("User not found");
         }
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            String reason = "Invalid password";
-            logger.warn("User login failed: userId={}, reason={}", user.getUserId(), reason);
-            throw new ServiceException(reason);
+            throw new ServiceException(String.format("Invalid password: userId=%s", user.getUserId()));
         }
+        return jwtTokenProvider.generateLoginToken(user.getUserId());
+    }
 
-        logger.info("User login successful: userId={}", user.getUserId());
-        return jwtTokenProvider.generateToken(user.getUserId());
+    public void sendAuthLinkMail(String email) {
+
     }
 
     public void findUserId(String email) {
         User user = userRepository.findByEmail(email);
         if(user == null) {
-            String reason = "User not found";
-            logger.warn("ID retrieval failed: reason={}", reason);
-            throw new ServiceException(reason);
+            throw new ServiceException("User not found");
         }
         try {
             String title = "Your User ID Has Been Successfully Sent";
             String contents = String.format("User ID: %s", user.getUserId());
             emailSender.sendEmail(user.getEmail(), title, contents);
-            logger.info("ID retrieval successful: email={}", user.getEmail());
         } catch(ServiceException e) {
-            String reason = "Email Error";
-            logger.warn("ID retrieval failed: email={}, reason={}", user.getEmail(), reason);
-            throw new ServiceException(reason);
+            throw new ServiceException(String.format("Email Error: email=%s, reason=%s", user.getEmail(), e.toString()));
         }
     }
 }

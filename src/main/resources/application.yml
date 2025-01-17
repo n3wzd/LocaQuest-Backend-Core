@@ -1,0 +1,36 @@
+spring: 
+  application:
+    name: reviewsplash
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+logging:
+  level:
+    org:
+      springframework: OFF
+      hibernate: OFF
+      apache: OFF
+      catalina: OFF
+      web: OFF
+    com:
+      zaxxer: OFF
+jwt:
+  key:
+    login: ${SPRING_JWT_KEY_LOGIN}
+    auth: ${SPRING_JWT_KEY_AUTH}
+  expiration:
+    access: ${SPRING_JWT_EXPIRATION_ACCESS}
+    refresh: ${SPRING_JWT_REFRESH_ACCESS}
+    auth: ${SPRING_JWT_VERIFICATION_ACCESS}

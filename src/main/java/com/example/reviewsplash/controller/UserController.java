@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.reviewsplash.dto.LoginRequest;
 import com.example.reviewsplash.dto.LoginResponse;
@@ -20,6 +22,7 @@ import com.example.reviewsplash.service.UserService;
 public class UserController {
 
     private final UserService userService;
+    static final private Logger logger = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -28,16 +31,19 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
+            String prevPassword = user.getPassword();
             userService.registerUser(user);
 
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setUserId(user.getUserId());
-            loginRequest.setPassword(user.getPassword());
+            loginRequest.setPassword(prevPassword);
 
             String token = userService.authenticate(loginRequest);
+            logger.info("registerUser successfully: userId={}, email={}", user.getUserId(), user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(token));
         } catch (ServiceException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.warn("registerUser failed: {}", e.toString());
+            return ResponseEntity.badRequest().body("registerUser failed");
         }
     }
 
@@ -51,16 +57,24 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             String token = userService.authenticate(loginRequest);
+            logger.info("login successful: userId={}", loginRequest.getUserId());
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (ServiceException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            logger.warn("login failed: {}", e.toString());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("login failed");
         }
     }
 
     @GetMapping("/find-id")
     public ResponseEntity<?> findUserId(@RequestParam String email) {
-        boolean isAvailable = !userService.isEmailExists(email);
-        return ResponseEntity.ok(isAvailable);
+        try {
+            userService.findUserId(email);
+            logger.info("findUserId successful: email={}", email);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Authentication email sent successfully.");
+        } catch (ServiceException e) {
+            logger.warn("findUserId failed: {}", e.toString());
+            return ResponseEntity.badRequest().body("findUserId failed");
+        }
     }
 
     @GetMapping("/verify-email")
