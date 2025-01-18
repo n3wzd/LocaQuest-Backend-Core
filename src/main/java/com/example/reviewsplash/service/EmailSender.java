@@ -5,31 +5,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Value;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.example.reviewsplash.exception.ServiceException;
 import com.example.reviewsplash.model.EmailProvider;
 import com.example.reviewsplash.repogitory.EmailProviderRepository;
-import com.example.reviewsplash.exception.ServiceException;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailSender {
 
     private final EmailProviderRepository emailProviderRepository;
+    private final SpringTemplateEngine templateEngine;
     private final Map<String, JavaMailSenderImpl> mailSenderMap = new HashMap<>();
 
-    public EmailSender(EmailProviderRepository emailProviderRepository,
+    public EmailSender(EmailProviderRepository emailProviderRepository, SpringTemplateEngine templateEngine,
             @Value("${spring.mail.username}") String mailUserName,
             @Value("${spring.mail.password}") String mailPassword,
             @Value("${spring.mail.properties.mail.smtp.auth}") String mailAuth,
             @Value("${spring.mail.properties.mail.smtp.starttls.enable}") String mailStarttlsEnable) {
         this.emailProviderRepository = emailProviderRepository;
+        this.templateEngine = templateEngine;
 
         List<EmailProvider> mailProviderList = this.emailProviderRepository.findAll();
         for (EmailProvider mailProvider : mailProviderList) {
@@ -46,8 +51,17 @@ public class EmailSender {
         }
     }
 
-    public void sendEmail(String userEmail, String title, String contents) {
-        String domain = getDomain(userEmail);
+    private String getDomain(String email) {
+        String[] parts = email.split("@");
+        if (parts.length == 2) {
+            return parts[1];
+        } else {
+            throw new ServiceException("Invalid email address");
+        }
+    }
+
+    private void sendEmail(String email, String subject, String htmlContents) {
+        String domain = getDomain(email);
         EmailProvider emailProvider = (EmailProvider)emailProviderRepository.findByDomain(domain);
         if (emailProvider == null) {
             throw new ServiceException("Email provider not found");
@@ -58,21 +72,28 @@ public class EmailSender {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false);
 
-            helper.setTo(userEmail);
-            helper.setSubject(title);
-            helper.setText(contents, false);
+            helper.setTo(email);
+            helper.setSubject(subject);
+            helper.setText(htmlContents, true);
             mailSender.send(message);
         } catch (MailSendException | MessagingException | MailAuthenticationException e) {
-            throw new ServiceException("Failed to send email", e);
+            throw new ServiceException("Failed to send email: ", e);
         }
     }
 
-    private String getDomain(String email) {
-        String[] parts = email.split("@");
-        if (parts.length == 2) {
-            return parts[1];
-        } else {
-            throw new ServiceException("Invalid email address");
-        }
+    public void sendUserIDMail(String email, String userId) {
+        Context context = new Context();
+        context.setVariable("userId", userId);
+
+        String htmlContents = templateEngine.process("emailUserId", context);
+        sendEmail(email, "Your User ID Has Been Successfully Sent", htmlContents); 
+    }
+
+    public void sendAuthMail(String email, String linkUrl) {
+        Context context = new Context();
+        context.setVariable("linkUrl", linkUrl);
+
+        String htmlContents = templateEngine.process("emailVerification", context);
+        sendEmail(email, "Email Verification", htmlContents); 
     }
 }

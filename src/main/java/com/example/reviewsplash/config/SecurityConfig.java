@@ -1,5 +1,7 @@
 package com.example.reviewsplash.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,11 +21,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        List<String> publicUrls = List.of(
+            "/api/users/register", 
+            "/api/users/check-email", 
+            "/api/users/login", 
+            "/api/users/find-id", 
+            "/api/users/send-auth-email",
+            "/api/users/verify-email",
+            "/api/users/send-auth-email-userid",
+            "/api/users/update-password"
+        );
+
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/api/users/register", "/api/users/login", "/api/users/find-id").permitAll()
+                    .requestMatchers(publicUrls.toArray(String[]::new)).permitAll()
                     .anyRequest().authenticated()
             )
             .formLogin(formLogin ->
