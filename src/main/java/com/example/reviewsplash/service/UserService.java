@@ -2,7 +2,8 @@ package com.example.reviewsplash.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,6 +13,8 @@ import com.example.reviewsplash.dto.LoginRequest;
 import com.example.reviewsplash.exception.ServiceException;
 import com.example.reviewsplash.model.User;
 import com.example.reviewsplash.repogitory.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -29,18 +32,19 @@ public class UserService {
         this.jwtTokenManager = jwtTokenManager;
     }
 
+    public String getCurrentUserId() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
+    }
+
     public User registerUser(User user) {
         if (isEmailExists(user.getEmail())) {
             throw new ServiceException("Email already exists");
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        try {
-            User registerdUser = userRepository.save(user);
-            return registerdUser;
-        } catch(IllegalArgumentException | OptimisticLockingFailureException e) {
-            throw new ServiceException(String.format("Database Error: %s", e.toString()));
-        }
+        User registerdUser = userRepository.save(user);
+        return registerdUser;
     }
 
     public boolean isEmailExists(String email) {
@@ -53,7 +57,7 @@ public class UserService {
             throw new ServiceException("User not found");
         }
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new ServiceException(String.format("Invalid password: userId=%s", user.getUserId()));
+            throw new ServiceException("Invalid password");
         }
         return jwtTokenManager.generateLoginToken(user.getUserId());
     }
@@ -66,7 +70,7 @@ public class UserService {
         try {
             emailSender.sendUserIDMail(email, user.getUserId());
         } catch(ServiceException e) {
-            throw new ServiceException(String.format("Email Error: email=%s, reason=%s", user.getEmail(), e.toString()));
+            throw new ServiceException(String.format("Email Error: %s", e.toString()));
         }
     }
 
@@ -79,7 +83,7 @@ public class UserService {
         try {
             emailSender.sendAuthMail(email, linkUrl);
         } catch(ServiceException e) {
-            throw new ServiceException(String.format("Email Error: email=%s, reason=%s", email, e.toString()));
+            throw new ServiceException(String.format("Email Error: {}", e.toString()));
         }
     }
 
@@ -96,6 +100,7 @@ public class UserService {
         sendAuthMail(user.getEmail(), redirectUrl);
     }
 
+    @Transactional
     public void updatePasswordByUserId(String password, String userId) {
         String encodedPassword = passwordEncoder.encode(password);
         if(userRepository.updatePassword(encodedPassword, userId) == 0) {
@@ -103,31 +108,26 @@ public class UserService {
         }
     }
 
-    public User updateUser(User newUser, String token) {
-        jwtTokenManager.validateAuthTokenWithException(token);
-        String userId = jwtTokenManager.getUserIdByLoginToken(token);
-        User currentUser = userRepository.findByUserId(userId);
-
-        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
-        currentUser.setPassword(encodedPassword);
-        currentUser.setEmail(newUser.getEmail());
-        currentUser.setName(newUser.getName());
-        try {
-            User updatedUser = userRepository.save(currentUser);
-            return updatedUser;
-        } catch(IllegalArgumentException | OptimisticLockingFailureException e) {
-            throw new ServiceException(String.format("Database Error: %s", e.toString()));
-        }
-    }
-
-    public User checkPassword(String password, String token) {
-        jwtTokenManager.validateAuthTokenWithException(token);
-        String userId = jwtTokenManager.getUserIdByLoginToken(token);
+    public User updateUser(User newUser) {
+        String userId = getCurrentUserId();
         User user = userRepository.findByUserId(userId);
 
+        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+        user.setPassword(encodedPassword);
+        user.setEmail(newUser.getEmail());
+        user.setName(newUser.getName());
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUser(String password) {
+        String userId = getCurrentUserId();
+        User user = userRepository.findByUserId(userId);
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new ServiceException(String.format("Invalid password: userId=%s", user.getUserId()));
+            throw new ServiceException("Invalid password");
         }
-        return user;
+        if (userRepository.deleteByUserId(userId) == 0) {
+            throw new ServiceException("Failed to delete user");
+        }
     }
 }

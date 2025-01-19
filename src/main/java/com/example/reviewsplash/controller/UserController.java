@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,14 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.reviewsplash.dto.AuthEmailRequest;
 import com.example.reviewsplash.dto.LoginRequest;
-import com.example.reviewsplash.dto.LoginResponse;
+import com.example.reviewsplash.dto.group.CreateGroup;
+import com.example.reviewsplash.dto.group.PasswordGroup;
+import com.example.reviewsplash.dto.group.UpdateGroup;
 import com.example.reviewsplash.exception.ServiceException;
 import com.example.reviewsplash.exception.TokenException;
 import com.example.reviewsplash.model.User;
 import com.example.reviewsplash.service.UserService;
-import com.example.reviewsplash.util.TokenParser;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -36,8 +37,12 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@Validated(CreateGroup.class) @RequestBody User user, BindingResult bindingResult) {
         try {
+            if (bindingResult.hasErrors()) {
+                throw new IllegalArgumentException("Invalid dto");
+            }
+
             String prevPassword = user.getPassword();
             User registedUser = userService.registerUser(user);
 
@@ -46,10 +51,10 @@ public class UserController {
             loginRequest.setPassword(prevPassword);
 
             String token = userService.login(loginRequest);
-            logger.info("registerUser successfully: userId={}, email={}", registedUser.getUserId(), registedUser.getEmail());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(token));
-        } catch (ServiceException e) {
-            logger.warn("registerUser failed: {}", e.toString());
+            logger.info("registerUser successfully: userId={}", registedUser.getUserId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(token);
+        } catch (ServiceException | IllegalArgumentException e) {
+            logger.warn("registerUser failed: userId={}, {}", user.getUserId(), e.toString());
             return ResponseEntity.badRequest().body("registerUser failed");
         }
     }
@@ -65,9 +70,9 @@ public class UserController {
         try {
             String token = userService.login(loginRequest);
             logger.info("login successful: userId={}", loginRequest.getUserId());
-            return ResponseEntity.ok(new LoginResponse(token));
+            return ResponseEntity.ok(token);
         } catch (ServiceException e) {
-            logger.warn("login failed: {}", e.toString());
+            logger.warn("login failed: userId={}, {}", loginRequest.getUserId(), e.toString());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("login failed");
         }
     }
@@ -79,7 +84,7 @@ public class UserController {
             logger.info("findUserId successful: email={}", email);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Authentication email sent successfully.");
         } catch (ServiceException e) {
-            logger.warn("findUserId failed: {}", e.toString());
+            logger.warn("findUserId failed: email={}, {}", email, e.toString());
             return ResponseEntity.badRequest().body("findUserId failed");
         }
     }
@@ -91,7 +96,7 @@ public class UserController {
             logger.info("sendAuthEmailFromRegister successful: email={}", authEmailRequest.getEmail());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Authentication email sent successfully.");
         } catch (ServiceException e) {
-            logger.warn("sendAuthEmailFromRegister failed: {}", e.toString());
+            logger.warn("sendAuthEmailFromRegister failed: email={}, {}", authEmailRequest.getEmail(), e.toString());
             return ResponseEntity.badRequest().body("sendAuthEmailFromRegister failed");
         }
     }
@@ -105,7 +110,7 @@ public class UserController {
                 .location(URI.create(redirectUrl))
                 .build();
         } catch (ServiceException | TokenException e) {
-            logger.warn("verifyAuthEmail failed: {}", e.toString());
+            logger.warn("verifyAuthEmail failed: token={}, {}", token, e.toString());
             return ResponseEntity.badRequest().body("verifyAuthEmail failed");
         }
     }
@@ -117,46 +122,50 @@ public class UserController {
             logger.info("findPassword successful: userId={}", authEmailRequest.getUserId());
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Authentication email sent successfully.");
         } catch (ServiceException e) {
-            logger.warn("findPassword failed: {}", e.toString());
+            logger.warn("findPassword failed: userId={}, {}", authEmailRequest.getUserId(), e.toString());
             return ResponseEntity.badRequest().body("findPassword failed");
         }
     }
 
     @PostMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> updatePassword(@Validated(PasswordGroup.class) @RequestBody User user, BindingResult bindingResult) {
         try {
-            userService.updatePasswordByUserId(loginRequest.getPassword(), loginRequest.getUserId());
-            logger.info("updatePassword successful: userId={}", loginRequest.getUserId());
+            if (bindingResult.hasErrors()) {
+                throw new IllegalArgumentException("Invalid dto");
+            }
+            userService.updatePasswordByUserId(user.getPassword(), user.getUserId());
+            logger.info("updatePassword successful: userId={}", user.getUserId());
             return ResponseEntity.ok("Password updated successfully.");
-        } catch (ServiceException e) {
-            logger.warn("updatePassword failed: {}", e.toString());
+        } catch (ServiceException | IllegalArgumentException e) {
+            logger.warn("updatePassword failed: userId={}, {}", user.getUserId(), e.toString());
             return ResponseEntity.badRequest().body("updatePassword failed");
         }
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateUser(HttpServletRequest request, @RequestBody User user) {
-        String token = TokenParser.extractToken(request);
+    public ResponseEntity<?> updateUser(@Validated(UpdateGroup.class) @RequestBody User user, BindingResult bindingResult) {
         try {
-            User updatedUser = userService.updateUser(user, token);
-            logger.info("updateUser successful: userId={}", updatedUser.getUserId());
+            if (bindingResult.hasErrors()) {
+                throw new IllegalArgumentException("Invalid dto");
+            }
+            userService.updateUser(user);
+            logger.info("updateUser successful: userId={}", userService.getCurrentUserId());
             return ResponseEntity.ok("User Profile updated successfully.");
-        } catch (ServiceException | TokenException e) {
-            logger.warn("updateUser failed: {}", e.toString());
+        } catch (ServiceException | TokenException | IllegalArgumentException e) {
+            logger.warn("updateUser failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
             return ResponseEntity.badRequest().body("updateUser failed");
         }
     }
 
-    @PostMapping("/check-password")
-    public ResponseEntity<?> checkPassword(HttpServletRequest request, @RequestBody String password) {
-        String token = TokenParser.extractToken(request);
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteUser(@RequestBody String password) {
         try {
-            User user = userService.checkPassword(password, token);
-            logger.info("checkPassword successful: userId={}", user.getUserId());
-            return ResponseEntity.ok("Password Correct!");
+            userService.deleteUser(password);
+            logger.info("deleteUser successful: userId={}", userService.getCurrentUserId());
+            return ResponseEntity.ok("Goodbye!");
         } catch (ServiceException | TokenException e) {
-            logger.warn("checkPassword failed: {}", e.toString());
-            return ResponseEntity.badRequest().body("checkPassword failed");
+            logger.warn("deleteUser failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
+            return ResponseEntity.badRequest().body("deleteUser failed");
         }
     }
 }

@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -13,6 +14,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import com.example.reviewsplash.exception.TokenException;
 
+@Component
 public class JwtTokenManager {
 
     @Value("${jwt.key.login}")
@@ -67,10 +69,9 @@ public class JwtTokenManager {
         }
     }
 
-    public String getClaim(String token, String secretKey, String claimKey) {
+    private Claims getClaims(String token, String secretKey) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-            return claims.get(claimKey, String.class);
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         } catch (JwtException | IllegalArgumentException e) {
             return null;
         }
@@ -80,7 +81,7 @@ public class JwtTokenManager {
         return validateToken(token, jwtKeyAuth);
     }
 
-    private boolean validateLoginToken(String token) {
+    public boolean validateLoginToken(String token) {
         return validateToken(token, jwtKeyLogin);
     }
 
@@ -100,19 +101,22 @@ public class JwtTokenManager {
         return getSubject(token, jwtKeyLogin);
     }
 
+    public Claims getClaimsByLoginToken(String token) {
+        return getClaims(token, jwtKeyLogin);
+    }
+
     public String getRedirectUrlByAuthToken(String token) {
-        return getClaim(token, jwtKeyAuth, redirectUrlClaimName);
+        Claims claims = getClaims(token, jwtKeyAuth);
+        if(claims != null) {
+            return claims.get(redirectUrlClaimName, String.class);
+        } else {
+            return null;
+        }
     }
 
     public void validateAuthTokenWithException(String token) {
         if(token == null || validateAuthToken(token)) {
             throw new TokenException("Invalid Auth Token");
-        }
-    }
-
-    public void validateLoginTokenWithException(String token) {
-        if(token == null || validateLoginToken(token)) {
-            throw new TokenException("Invalid Login Token");
         }
     }
 }

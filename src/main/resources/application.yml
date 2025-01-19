@@ -18,14 +18,12 @@ spring:
             enable: true
 logging:
   level:
-    org:
-      springframework: OFF
-      hibernate: OFF
-      apache: OFF
-      catalina: OFF
-      web: OFF
-    com:
-      zaxxer: OFF
+    org.springframework: OFF
+    org.springframework.web: OFF
+    org.hibernate: OFF
+    org.apache: OFF
+    org.apache.catalina: OFF
+    com.zaxxer: OFF
 jwt:
   key:
     login: ${SPRING_JWT_KEY_LOGIN}
