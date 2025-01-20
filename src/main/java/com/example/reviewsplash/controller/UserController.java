@@ -151,7 +151,7 @@ public class UserController {
             userService.updateUser(user);
             logger.info("updateUser successful: userId={}", userService.getCurrentUserId());
             return ResponseEntity.ok("User Profile updated successfully.");
-        } catch (ServiceException | TokenException | IllegalArgumentException e) {
+        } catch (ServiceException | IllegalArgumentException e) {
             logger.warn("updateUser failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
             return ResponseEntity.badRequest().body("updateUser failed");
         }
@@ -163,7 +163,7 @@ public class UserController {
             userService.deleteUser(password);
             logger.info("deleteUser successful: userId={}", userService.getCurrentUserId());
             return ResponseEntity.ok("Goodbye!");
-        } catch (ServiceException | TokenException e) {
+        } catch (ServiceException e) {
             logger.warn("deleteUser failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
             return ResponseEntity.badRequest().body("deleteUser failed");
         }

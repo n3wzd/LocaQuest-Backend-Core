@@ -1,7 +1,5 @@
 package com.example.reviewsplash.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +21,6 @@ public class UserService {
     private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenManager jwtTokenManager;
-    static final private Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository userRepository, EmailSender emailSender, PasswordEncoder passwordEncoder, JwtTokenManager jwtTokenManager) {
         this.userRepository = userRepository;
