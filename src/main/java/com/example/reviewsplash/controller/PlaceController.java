@@ -1,5 +1,7 @@
 package com.example.reviewsplash.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -8,10 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.reviewsplash.exception.ServiceException;
 import com.example.reviewsplash.dto.PlaceRequest;
-import com.example.reviewsplash.service.UserService;
+import com.example.reviewsplash.dto.Place;
+import com.example.reviewsplash.exception.ServiceException;
 import com.example.reviewsplash.service.PlaceService;
+import com.example.reviewsplash.service.UserService;
 
 @RestController
 @RequestMapping("/api/places")
@@ -29,9 +32,9 @@ public class PlaceController {
     @PostMapping("/search")
     public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest) {
         try {
-            placeService.search(placeRequest.getLocation(), placeRequest.getQuery());
+            List<Place> result = placeService.search(placeRequest.getLocation(), placeRequest.getQuery());
             logger.info("searchPlaces successful: userId={}", userService.getCurrentUserId());
-            return ResponseEntity.ok("User Profile updated successfully.");
+            return ResponseEntity.ok(result);
         } catch (ServiceException e) {
             logger.warn("searchPlaces failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
             return ResponseEntity.badRequest().body("searchPlaces failed");

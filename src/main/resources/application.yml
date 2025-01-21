@@ -32,3 +32,5 @@ jwt:
     access: ${SPRING_JWT_EXPIRATION_ACCESS}
     refresh: ${SPRING_JWT_REFRESH_ACCESS}
     auth: ${SPRING_JWT_VERIFICATION_ACCESS}
+google:
+  key: ${GOOGLE_PLACE_API_KEY}
