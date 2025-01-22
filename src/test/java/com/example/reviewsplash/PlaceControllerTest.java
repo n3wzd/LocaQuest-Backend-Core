@@ -1,8 +1,5 @@
 package com.example.reviewsplash;
 
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.Logger;
@@ -15,32 +12,30 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.reviewsplash.dto.Location;
+import com.example.reviewsplash.dto.MapRouteRequest;
 import com.example.reviewsplash.dto.PlaceRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PlaceControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     final private ObjectMapper objectMapper = new ObjectMapper();
     static final private Logger logger = LoggerFactory.getLogger(PlaceControllerTest.class);
+    private static final String TEST_TOKEN = "";
 
     @ParameterizedTest
-    @Order(1)
     @CsvSource({
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBbGljZSIsImlhdCI6MTczNzQyMTc4MSwiZXhwIjoxNzk3NDIxNzIxfQ.Ky0wbUPT9De--Gr5kFGL1y7SqY_kUMwkIJ-yRVcit9Y, 37.868667, 126.788706, fuel, 200", 
+        TEST_TOKEN + ", 37, 126, fuel, 2000, 200", 
     })
-    void testSearch(String token, double latitude, double longitude, String query, int expectedStatus) throws Exception {
-        Location location = new Location();
-        location.setLatitude(latitude);
-        location.setLongitude(longitude);
+    void testSearch(String token, double latitude, double longitude, String query, int radius, int expectedStatus) throws Exception {
         PlaceRequest placeRequest = new PlaceRequest();
-        placeRequest.setLocation(location);
+        placeRequest.setLatitude(latitude);
+        placeRequest.setLongitude(longitude);
         placeRequest.setQuery(query);
+        placeRequest.setRadius(radius);
 
         String json = objectMapper.writeValueAsString(placeRequest);
         MvcResult result = mockMvc.perform(post("/api/places/search")
@@ -50,5 +45,26 @@ public class PlaceControllerTest {
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         logger.info("testSearch: {}", result.getResponse().getContentAsString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        TEST_TOKEN + ", 37, 126, 37, 126, 200", 
+    })
+    void testRoute(String token, double depLat, double depLng, double destLat, double destLng, int expectedStatus) throws Exception {
+        MapRouteRequest mapRouteRequest = new MapRouteRequest();
+        mapRouteRequest.setDepLatitude(depLat);
+        mapRouteRequest.setDepLongitude(depLng);
+        mapRouteRequest.setDestLatitude(destLat);
+        mapRouteRequest.setDestLongitude(destLng);
+
+        String json = objectMapper.writeValueAsString(mapRouteRequest);
+        MvcResult result = mockMvc.perform(post("/api/places/route")
+                .contentType("application/json")
+                .header("Authorization", "Bearer " + token)
+                .content(json))
+                .andExpect(status().is(expectedStatus))
+                .andReturn();
+        logger.info("testRoute: {}", result.getResponse().getContentAsString());
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.reviewsplash.dto.MapRouteRequest;
 import com.example.reviewsplash.dto.PlaceRequest;
 import com.example.reviewsplash.dto.Place;
 import com.example.reviewsplash.exception.ServiceException;
@@ -32,12 +33,24 @@ public class PlaceController {
     @PostMapping("/search")
     public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest) {
         try {
-            List<Place> result = placeService.search(placeRequest.getLocation(), placeRequest.getQuery());
+            List<Place> result = placeService.search(placeRequest);
             logger.info("searchPlaces successful: userId={}", userService.getCurrentUserId());
             return ResponseEntity.ok(result);
         } catch (ServiceException e) {
             logger.warn("searchPlaces failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
             return ResponseEntity.badRequest().body("searchPlaces failed");
+        }
+    }
+
+    @PostMapping("/route")
+    public ResponseEntity<?> routeDestination(@RequestBody MapRouteRequest mapRouteRequest) {
+        try {
+            String result = placeService.route(mapRouteRequest);
+            logger.info("routeDestination successful: userId={}", userService.getCurrentUserId());
+            return ResponseEntity.ok(result);
+        } catch (ServiceException e) {
+            logger.warn("routeDestination failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
+            return ResponseEntity.badRequest().body("routeDestination failed");
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.reviewsplash.service.api;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,10 +68,10 @@ public class GooglePlaceAPI {
     private Place createPlace(GooglePlaceSearchResult.Result data) {
         Place place = new Place();
         place.setName(data.getName());
-        place.setLatitude(new BigDecimal(String.valueOf(data.getGeometry().getLocation().getLat())));
-        place.setLongitude(new BigDecimal(String.valueOf(data.getGeometry().getLocation().getLng())));
-        place.setRating(new BigDecimal(String.valueOf(data.getRating())));
-        place.setReviews(data.getUserRatingsTotal());
+        place.setLatitude(data.getGeometry().getLocation().getLat());
+        place.setLongitude(data.getGeometry().getLocation().getLng());
+        place.setRating(data.getRating());
+        place.setReviewCount(data.getUserRatingsTotal());
         place.setTypes(data.getTypes());
         return place;
     }

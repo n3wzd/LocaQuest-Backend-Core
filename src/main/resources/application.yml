@@ -16,6 +16,11 @@ spring:
           auth: true
           starttls:
             enable: true
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
 logging:
   level:
     org.springframework: OFF
