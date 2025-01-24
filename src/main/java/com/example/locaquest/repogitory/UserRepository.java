@@ -11,12 +11,12 @@ import com.example.locaquest.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
     User findByEmail(String email);
-    User findByUserId(String userId);
+    User findByUserId(int userId);
     boolean existsByEmail(String email);
-    boolean existsByUserId(String userId);
-    int deleteByUserId(String userId);
+    boolean existsByUserId(int userId);
+    int deleteByUserId(int userId);
 
     @Modifying
-    @Query("UPDATE User u SET u.password = :password WHERE u.userId = :userId")
-    int updatePassword(@Param("password") String password, @Param("userId") String userId);
+    @Query("UPDATE User u SET u.password = :password WHERE u.email = :email")
+    int updatePassword(@Param("password") String password, @Param("email") String email);
 }

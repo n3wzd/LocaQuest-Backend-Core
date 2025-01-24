@@ -32,9 +32,7 @@ public class JwtTokenManager {
     @Value("${jwt.expiration.auth}")
     private int jwtExpirationAuth;
 
-    private final String redirectUrlClaimName = "redirectUrl";
-
-    private String generateToken(String subject, String secretKey, int validityInMinutes, String redirectUrl) {
+    private String generateToken(String subject, String secretKey, int validityInMinutes) {
         Claims claims = Jwts.claims().setSubject(subject);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, validityInMinutes);
@@ -46,9 +44,6 @@ public class JwtTokenManager {
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey);
-        if(redirectUrl != null) {
-            token.claim(redirectUrlClaimName, redirectUrl);
-        }
         return token.compact();
     }
 
@@ -85,12 +80,12 @@ public class JwtTokenManager {
         return validateToken(token, jwtKeyLogin);
     }
 
-    public String generateAuthToken(String email, String redirectUrl) {
-        return generateToken(email, jwtKeyAuth, jwtExpirationAuth, redirectUrl);
+    public String generateAuthToken(String email) {
+        return generateToken(email, jwtKeyAuth, jwtExpirationAuth);
     }
 
     public String generateLoginToken(String userId) {
-        return generateToken(userId, jwtKeyLogin, jwtExpirationAccess, null);
+        return generateToken(userId, jwtKeyLogin, jwtExpirationAccess);
     }
 
     public String getEmailByAuthToken(String token) {
@@ -105,17 +100,8 @@ public class JwtTokenManager {
         return getClaims(token, jwtKeyLogin);
     }
 
-    public String getRedirectUrlByAuthToken(String token) {
-        Claims claims = getClaims(token, jwtKeyAuth);
-        if(claims != null) {
-            return claims.get(redirectUrlClaimName, String.class);
-        } else {
-            return null;
-        }
-    }
-
     public void validateAuthTokenWithException(String token) {
-        if(token == null || validateAuthToken(token)) {
+        if(token == null || !validateAuthToken(token)) {
             throw new TokenException("Invalid Auth Token");
         }
     }

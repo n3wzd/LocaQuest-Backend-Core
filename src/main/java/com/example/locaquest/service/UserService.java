@@ -1,5 +1,7 @@
 package com.example.locaquest.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,104 +23,97 @@ public class UserService {
     private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenManager jwtTokenManager;
+    private final RedisService redisService;
+    static final private Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository, EmailSender emailSender, PasswordEncoder passwordEncoder, JwtTokenManager jwtTokenManager) {
+    public UserService(UserRepository userRepository, EmailSender emailSender, PasswordEncoder passwordEncoder, JwtTokenManager jwtTokenManager, RedisService redisService) {
         this.userRepository = userRepository;
         this.emailSender = emailSender;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenManager = jwtTokenManager;
+        this.redisService = redisService;
     }
 
-    public String getCurrentUserId() {
+    public int getCurrentUserId() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
+        return Integer.parseInt(userDetails.getUsername());
     }
 
-    public User registerUser(User user) {
+    public void preregisterUser(User user) {
         if (isEmailExists(user.getEmail())) {
             throw new ServiceException("Email already exists");
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+        redisService.savePreregisterUser(user);
+        sendAuthMail(user.getEmail(), "/api/users/register/accept");
+    }
+
+    public User registerUser(String token) {
+        String email = getEmailByAuthMailToken(token);
+        if (isEmailExists(email)) {
+            throw new ServiceException("Email already exists");
+        }
+        User user = redisService.getPreregisterUser(email);
+        if (user == null) {
+            throw new ServiceException("can't find User in Redis");
+        }
+        redisService.deletePreregisterUser(email);
         User registerdUser = userRepository.save(user);
         return registerdUser;
     }
 
-    public boolean isEmailExists(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
     public String login(LoginRequest loginRequest) {
-        User user = userRepository.findByUserId(loginRequest.getUserId());
+        User user = userRepository.findByEmail(loginRequest.getEmail());
         if(user == null) {
             throw new ServiceException("User not found");
         }
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new ServiceException("Invalid password");
         }
-        return jwtTokenManager.generateLoginToken(user.getUserId());
+        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()));
     }
 
-    public void findUserId(String email) {
-        User user = userRepository.findByEmail(email);
-        if(user == null) {
-            throw new ServiceException("User not found");
+    public void updatePasswordSendAuthEmail(String email) {
+        if (!isEmailExists(email)) {
+            throw new ServiceException("Email not exists");
         }
-        try {
-            emailSender.sendUserIDMail(email, user.getUserId());
-        } catch(ServiceException e) {
-            throw new ServiceException(String.format("Email Error: %s", e.toString()));
-        }
+        sendAuthMail(email, "/api/users/update-password/accept");
     }
 
-    public void sendAuthMail(String email, String redirectUrl) {
-        String token = jwtTokenManager.generateAuthToken(email, redirectUrl);
-        String linkUrl = ServletUriComponentsBuilder.fromCurrentRequestUri()
-            .replacePath("/api/users/verify-email")
-            .queryParam("token", token)
-            .toUriString();
-        try {
-            emailSender.sendAuthMail(email, linkUrl);
-        } catch(ServiceException e) {
-            throw new ServiceException(String.format("Email Error: {}", e.toString()));
-        }
+    public String updatePasswordVerifyAuthEmail(String token) {
+        String email = getEmailByAuthMailToken(token);
+        redisService.saveChangePasswordEmail(email);
+        return email;
     }
 
-    public String getRedicrectUrlByAuthMailToken(String token) {
-        jwtTokenManager.validateAuthTokenWithException(token);
-        return jwtTokenManager.getRedirectUrlByAuthToken(token);
-    }
-
-    public void sendAuthMailByUserId(String userId, String redirectUrl) {
-        User user = userRepository.findByUserId(userId);
-        if(user == null) {
-            throw new ServiceException("User not found");
-        }
-        sendAuthMail(user.getEmail(), redirectUrl);
+    public boolean updatePasswordCheckVerified(String email) {
+        String value = redisService.getChangePasswordEmail(email);
+        return value != null;
     }
 
     @Transactional
-    public void updatePasswordByUserId(String password, String userId) {
+    public void updatePasswordByEmail(String password, String email) {
         String encodedPassword = passwordEncoder.encode(password);
-        if(userRepository.updatePassword(encodedPassword, userId) == 0) {
+        if(userRepository.updatePassword(encodedPassword, email) == 0) {
             throw new ServiceException("Failed to update password");
         }
+        redisService.deleteChangePasswordEmail(email);
     }
 
     public User updateUser(User newUser) {
-        String userId = getCurrentUserId();
+        int userId = getCurrentUserId();
         User user = userRepository.findByUserId(userId);
 
         String encodedPassword = passwordEncoder.encode(newUser.getPassword());
         user.setPassword(encodedPassword);
-        user.setEmail(newUser.getEmail());
         user.setName(newUser.getName());
         return userRepository.save(user);
     }
 
     @Transactional
     public void deleteUser(String password) {
-        String userId = getCurrentUserId();
+        int userId = getCurrentUserId();
         User user = userRepository.findByUserId(userId);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ServiceException("Invalid password");
@@ -126,5 +121,31 @@ public class UserService {
         if (userRepository.deleteByUserId(userId) == 0) {
             throw new ServiceException("Failed to delete user");
         }
+    }
+    
+    private boolean isEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    private void sendAuthMail(String email, String serverUrl) {
+        String token = jwtTokenManager.generateAuthToken(email);
+        String tokenUrl = createServerUrlForAuthMail(serverUrl, token);
+        try {
+            emailSender.sendAuthMail(email, tokenUrl);
+        } catch(ServiceException e) {
+            throw new ServiceException(String.format("Email Error: {}", e.toString()));
+        }
+    }
+
+    private String createServerUrlForAuthMail(String url, String token) {
+        return ServletUriComponentsBuilder.fromCurrentRequestUri()
+            .replacePath(url)
+            .queryParam("token", token)
+            .toUriString();
+    }
+
+    private String getEmailByAuthMailToken(String token) {
+        jwtTokenManager.validateAuthTokenWithException(token);
+        return jwtTokenManager.getEmailByAuthToken(token);
     }
 }

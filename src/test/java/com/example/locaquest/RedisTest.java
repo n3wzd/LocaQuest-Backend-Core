@@ -1,5 +1,7 @@
 package com.example.locaquest;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,29 +10,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.example.locaquest.service.EmailSender;
-import com.example.locaquest.exception.ServiceException;
+import com.example.locaquest.service.RedisService;
 
 @SpringBootTest
-public class EmailSenderTest {
+public class RedisTest {
 
     @Autowired
-    private EmailSender emailSender;
+    private RedisService redisService;
 
     static final private Logger logger = LoggerFactory.getLogger(EmailSenderTest.class);
 
     /*@ParameterizedTest
     @CsvSource({
-        "test@gmail.com, Test Mail, This is Test, true", 
-        "alice@notExistsMail.com, Test Mail, This is Test, false", 
+        "key1, ABC, ABC, true", 
+        "key2, ACD, ABD, false", 
     })
-    void testEmailSender(String userEmail, String title, String contents, String result) {
-        try {
-            emailSender.sendEmail(userEmail, title, contents);
-            logger.info("Response: {} - Success!", userEmail);
+    void testRedis(String dataKey, String in, String out, String result) {
+        redisService.save(dataKey, in, 10, TimeUnit.SECONDS);
+        String data = redisService.get(dataKey);
+
+        logger.info("get is: {}", data);
+        if(data.equals(out)) {
             assertEquals("true", result);
-        } catch (ServiceException e) {
-            logger.info("Response: {} - Failed!: {}", userEmail, e);
+        } else {
             assertEquals("false", result);
         }
     }*/

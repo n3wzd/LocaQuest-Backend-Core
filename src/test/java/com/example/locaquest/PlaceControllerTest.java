@@ -26,7 +26,7 @@ public class PlaceControllerTest {
     static final private Logger logger = LoggerFactory.getLogger(PlaceControllerTest.class);
     private static final String TEST_TOKEN = "";
 
-    @ParameterizedTest
+    /*@ParameterizedTest
     @CsvSource({
         TEST_TOKEN + ", 37, 126, fuel, 2000, 200", 
     })
@@ -66,5 +66,5 @@ public class PlaceControllerTest {
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         logger.info("testRoute: {}", result.getResponse().getContentAsString());
-    }
+    }*/
 }

@@ -81,19 +81,11 @@ public class EmailSender {
         }
     }
 
-    public void sendUserIDMail(String email, String userId) {
-        Context context = new Context();
-        context.setVariable("userId", userId);
-
-        String htmlContents = templateEngine.process("emailUserId", context);
-        sendEmail(email, "Your User ID Has Been Successfully Sent", htmlContents); 
-    }
-
     public void sendAuthMail(String email, String linkUrl) {
         Context context = new Context();
         context.setVariable("linkUrl", linkUrl);
 
-        String htmlContents = templateEngine.process("emailVerification", context);
+        String htmlContents = templateEngine.process("EmailVerification", context);
         sendEmail(email, "Email Verification", htmlContents); 
     }
 }

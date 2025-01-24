@@ -21,6 +21,10 @@ spring:
       enabled: true
     restart:
       enabled: true
+  redis:
+    host: ${SPRING_REDIS_URL}
+    port: ${SPRING_REDIS_PORT}
+    timeout: ${SPRING_REDIS_TIMEOUT}
 logging:
   level:
     org.springframework: OFF
