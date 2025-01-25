@@ -56,7 +56,7 @@ public class EmailSender {
         if (parts.length == 2) {
             return parts[1];
         } else {
-            throw new ServiceException("Invalid email address");
+            throw new ServiceException("Invalid email address: " + email);
         }
     }
 
@@ -64,7 +64,7 @@ public class EmailSender {
         String domain = getDomain(email);
         EmailProvider emailProvider = (EmailProvider)emailProviderRepository.findByDomain(domain);
         if (emailProvider == null) {
-            throw new ServiceException("Email provider not found");
+            throw new ServiceException("Email provider not found: " + domain);
         }
 
         try {
@@ -77,7 +77,7 @@ public class EmailSender {
             helper.setText(htmlContents, true);
             mailSender.send(message);
         } catch (MailSendException | MessagingException | MailAuthenticationException e) {
-            throw new ServiceException("Failed to send email: ", e);
+            throw new ServiceException("Failed to send email: " + email, e);
         }
     }
 

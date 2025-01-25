@@ -54,7 +54,7 @@ public class UserControllerTest {
         user.setPhone(phone);
 
         String json = objectMapper.writeValueAsString(user);
-        MvcResult result = mockMvc.perform(post("/api/users/register/send-auth-mail")
+        MvcResult result = mockMvc.perform(post("/users/register/send-auth-mail")
                 .contentType("application/json")
                 .content(json))
                 .andExpect(status().is(expectedStatus))
@@ -68,18 +68,18 @@ public class UserControllerTest {
         TEST_AUTH_TOKEN1 + ", 200"
     })
     void testRegisterUser(String token, int expectedStatus) throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/users/register/accept")
+        MvcResult result = mockMvc.perform(get("/email/register/accept")
                 .param("token", token))
                 .andReturn();
         logger.info("testRegisterUser: {}", result.getResponse().getContentAsString());
     }
 
-    /*@ParameterizedTest
+    @ParameterizedTest
     @Order(3)
     @CsvSource({
         "alice@example.com, Password@123, 200", 
-        "bob@example.com, asdfqwer, 401", 
-        "Bob, Secret@Pass2, 401", 
+        "bob@example.com, asdfqwer, 400", 
+        "Bob, Secret@Pass2, 400", 
         "bob@example.com, Secret@Pass1, 200", 
     })
     void testLoginUser(String email, String password, int expectedStatus) throws Exception {
@@ -88,7 +88,7 @@ public class UserControllerTest {
         loginRequest.setPassword(password);
 
         String json = objectMapper.writeValueAsString(loginRequest);
-        MvcResult result = mockMvc.perform(post("/api/users/login")
+        MvcResult result = mockMvc.perform(post("/users/login")
                 .contentType("application/json")
                 .content(json))
                 .andExpect(status().is(expectedStatus))
@@ -97,13 +97,13 @@ public class UserControllerTest {
     }
 
     @ParameterizedTest
-    @Order(3)
+    @Order(4)
     @CsvSource({
         "testman@notExistsCom, 400", 
         "avail@mail.com, 202", 
     })
     void testChangePasswordSendAuthMail(String email, int expectedStatus) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/users/update-password/send-auth-email")
+        MvcResult result = mockMvc.perform(post("/users/update-password/send-auth-email")
                 .contentType("application/json")
                 .content(email))
                 .andExpect(status().is(expectedStatus))
@@ -112,25 +112,25 @@ public class UserControllerTest {
     }
 
     @ParameterizedTest
-    @Order(4)
+    @Order(5)
     @CsvSource({
         TEST_AUTH_TOKEN2 + ", 200"
     })
     void testChangePasswordVerifyMail(String token, int expectedStatus) throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/users/update-password/accept")
+        MvcResult result = mockMvc.perform(get("/email/update-password/accept")
                 .param("token", token))
                 .andReturn();
         logger.info("testChangePasswordVerifyMail: {}", result.getResponse().getContentAsString());
     }
 
     @ParameterizedTest
-    @Order(5)
+    @Order(6)
     @CsvSource({
         "testman@notExistsCom, false, 200", 
         "avail@mail.com, true, 200", 
     })
     void testChangePasswordCheckVerified(String email, String output, int expectedStatus) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/users/update-password/check-verified")
+        MvcResult result = mockMvc.perform(post("/users/update-password/check-verified")
                 .contentType("application/json")
                 .content(email))
                 .andExpect(status().is(expectedStatus))
@@ -140,7 +140,7 @@ public class UserControllerTest {
     }
 
     @ParameterizedTest
-    @Order(6)
+    @Order(7)
     @CsvSource({
         "alice@example.com, Password@1234, 200", 
         "bob@example.com, asdfqwer, 400", 
@@ -152,7 +152,7 @@ public class UserControllerTest {
         loginRequest.setPassword(password);
 
         String json = objectMapper.writeValueAsString(loginRequest);
-        MvcResult result = mockMvc.perform(post("/api/users/update-password")
+        MvcResult result = mockMvc.perform(post("/users/update-password")
                 .contentType("application/json")
                 .content(json))
                 .andExpect(status().is(expectedStatus))
@@ -161,7 +161,7 @@ public class UserControllerTest {
     }
 
     @ParameterizedTest
-    @Order(7)
+    @Order(8)
     @CsvSource({
         TEST_TOKEN1 + ", Password@123, Alice Master, 200",
         TEST_TOKEN2 + ", asdfqwer, Bob Bob, 400",
@@ -173,7 +173,7 @@ public class UserControllerTest {
         user.setName(name);
 
         String json = objectMapper.writeValueAsString(user);
-        MvcResult result = mockMvc.perform(post("/api/users/update")
+        MvcResult result = mockMvc.perform(post("/users/update")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + token)
                 .content(json))
@@ -183,14 +183,14 @@ public class UserControllerTest {
     }
 
     @ParameterizedTest
-    @Order(8)
+    @Order(9)
     @CsvSource({
         TEST_TOKEN1 + ", Password@123, 200",
         TEST_TOKEN2 + ", asdfqwer, 400",
         TEST_TOKEN2 + ", Secret@Pass1, 200",
     })
     void testDeleteUser(String token, String password, int expectedStatus) throws Exception {
-        MvcResult result = mockMvc.perform(post("/api/users/delete")
+        MvcResult result = mockMvc.perform(post("/users/delete")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + token)
                 .content(password))

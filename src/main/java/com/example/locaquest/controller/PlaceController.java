@@ -18,7 +18,7 @@ import com.example.locaquest.service.PlaceService;
 import com.example.locaquest.service.UserService;
 
 @RestController
-@RequestMapping("/api/places")
+@RequestMapping("/places")
 public class PlaceController {
 
     private final UserService userService;

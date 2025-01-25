@@ -32,13 +32,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         List<String> publicUrls = List.of(
-            "/api/users/register/send-auth-mail", 
-            "/api/users/register/accept", 
-            "/api/users/login", 
-            "/api/users/update-password/send-auth-email",
-            "/api/users/update-password/accept",
-            "/api/users/update-password/check-verified",
-            "/api/users/update-password"
+            "/users/register/send-auth-mail", 
+            "/template/register/accept", 
+            "/users/register/check-verified",
+            "/users/login", 
+            "/users/update-password/send-auth-email",
+            "/template/update-password/accept",
+            "/users/update-password/check-verified",
+            "/users/update-password"
         );
 
         http

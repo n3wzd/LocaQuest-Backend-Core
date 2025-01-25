@@ -38,7 +38,7 @@ public class PlaceControllerTest {
         placeRequest.setRadius(radius);
 
         String json = objectMapper.writeValueAsString(placeRequest);
-        MvcResult result = mockMvc.perform(post("/api/places/search")
+        MvcResult result = mockMvc.perform(post("/places/search")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + token)
                 .content(json))
@@ -59,7 +59,7 @@ public class PlaceControllerTest {
         mapRouteRequest.setDestLongitude(destLng);
 
         String json = objectMapper.writeValueAsString(mapRouteRequest);
-        MvcResult result = mockMvc.perform(post("/api/places/route")
+        MvcResult result = mockMvc.perform(post("/places/route")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + token)
                 .content(json))

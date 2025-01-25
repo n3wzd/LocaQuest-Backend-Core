@@ -10,7 +10,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.locaquest.component.JwtTokenManager;
 import com.example.locaquest.dto.LoginRequest;
+import com.example.locaquest.exception.EmailExistsException;
+import com.example.locaquest.exception.EmailNotExistsException;
 import com.example.locaquest.exception.ServiceException;
+import com.example.locaquest.exception.WrongPasswordException;
 import com.example.locaquest.model.User;
 import com.example.locaquest.repogitory.UserRepository;
 
@@ -41,44 +44,52 @@ public class UserService {
 
     public void preregisterUser(User user) {
         if (isEmailExists(user.getEmail())) {
-            throw new ServiceException("Email already exists");
+            throw new EmailExistsException(user.getEmail());
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         redisService.savePreregisterUser(user);
-        sendAuthMail(user.getEmail(), "/api/users/register/accept");
+        sendAuthMail(user.getEmail(), "/template/register/accept");
     }
 
     public User registerUser(String token) {
         String email = getEmailByAuthMailToken(token);
         if (isEmailExists(email)) {
-            throw new ServiceException("Email already exists");
+            throw new EmailExistsException(email);
         }
         User user = redisService.getPreregisterUser(email);
         if (user == null) {
-            throw new ServiceException("can't find User in Redis");
+            throw new ServiceException("can't find User in Redis: " + email);
         }
         redisService.deletePreregisterUser(email);
         User registerdUser = userRepository.save(user);
         return registerdUser;
     }
 
+    public String registerCheckVerified(String email) {
+        User user = userRepository.findByEmail(email);
+        if(user == null) {
+            throw new EmailNotExistsException(email);
+        }
+        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()));
+    }
+
     public String login(LoginRequest loginRequest) {
         User user = userRepository.findByEmail(loginRequest.getEmail());
         if(user == null) {
-            throw new ServiceException("User not found");
+            throw new EmailNotExistsException(loginRequest.getEmail());
         }
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new ServiceException("Invalid password");
+            throw new WrongPasswordException(loginRequest.getEmail());
         }
         return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()));
     }
 
     public void updatePasswordSendAuthEmail(String email) {
         if (!isEmailExists(email)) {
-            throw new ServiceException("Email not exists");
+            throw new EmailNotExistsException(email);
         }
-        sendAuthMail(email, "/api/users/update-password/accept");
+        sendAuthMail(email, "/template/update-password/accept");
     }
 
     public String updatePasswordVerifyAuthEmail(String token) {
@@ -96,7 +107,7 @@ public class UserService {
     public void updatePasswordByEmail(String password, String email) {
         String encodedPassword = passwordEncoder.encode(password);
         if(userRepository.updatePassword(encodedPassword, email) == 0) {
-            throw new ServiceException("Failed to update password");
+            throw new ServiceException("Failed to update password: " + email);
         }
         redisService.deleteChangePasswordEmail(email);
     }
@@ -116,10 +127,10 @@ public class UserService {
         int userId = getCurrentUserId();
         User user = userRepository.findByUserId(userId);
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new ServiceException("Invalid password");
+            throw new WrongPasswordException(user.getEmail());
         }
         if (userRepository.deleteByUserId(userId) == 0) {
-            throw new ServiceException("Failed to delete user");
+            throw new ServiceException("Failed to delete user: " + user.getEmail());
         }
     }
     
@@ -130,11 +141,7 @@ public class UserService {
     private void sendAuthMail(String email, String serverUrl) {
         String token = jwtTokenManager.generateAuthToken(email);
         String tokenUrl = createServerUrlForAuthMail(serverUrl, token);
-        try {
-            emailSender.sendAuthMail(email, tokenUrl);
-        } catch(ServiceException e) {
-            throw new ServiceException(String.format("Email Error: {}", e.toString()));
-        }
+        emailSender.sendAuthMail(email, tokenUrl);
     }
 
     private String createServerUrlForAuthMail(String url, String token) {
