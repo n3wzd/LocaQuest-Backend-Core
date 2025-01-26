@@ -14,6 +14,7 @@ import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.EmailNotExistsException;
 import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.exception.WrongPasswordException;
+import com.example.locaquest.exception.AlreadyVerifiedException;
 import com.example.locaquest.model.User;
 import com.example.locaquest.repogitory.UserRepository;
 
@@ -59,9 +60,10 @@ public class UserService {
         }
         User user = redisService.getPreregisterUser(email);
         if (user == null) {
-            throw new ServiceException("can't find User in Redis: " + email);
+            throw new ServiceException("data not exists in Redis: " + email);
         }
         redisService.deletePreregisterUser(email);
+        redisService.saveAuthToken(token);
         User registerdUser = userRepository.save(user);
         return registerdUser;
     }
@@ -95,6 +97,7 @@ public class UserService {
     public String updatePasswordVerifyAuthEmail(String token) {
         String email = getEmailByAuthMailToken(token);
         redisService.saveChangePasswordEmail(email);
+        redisService.saveAuthToken(token);
         return email;
     }
 
@@ -131,6 +134,13 @@ public class UserService {
         }
         if (userRepository.deleteByUserId(userId) == 0) {
             throw new ServiceException("Failed to delete user: " + user.getEmail());
+        }
+    }
+
+    public void checkAuthTokenUsedWithException(String token) {
+        String data = redisService.getAuthToken(token);
+        if(data != null) {
+            throw new AlreadyVerifiedException(token);
         }
     }
     

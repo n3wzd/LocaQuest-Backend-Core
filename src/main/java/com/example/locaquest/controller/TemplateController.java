@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import com.example.locaquest.exception.EmailExistsException;
-import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.model.User;
 import com.example.locaquest.service.UserService;
 
@@ -29,6 +27,7 @@ public class TemplateController {
 
     @GetMapping("/register/accept")
     public String registerUser(@RequestParam String token) {
+        userService.checkAuthTokenUsedWithException(token);
         User registedUser = userService.registerUser(token);
         logger.info("registerUser successfully: email={}", registedUser.getEmail());
         return templateEngine.process("VerifyAccept", new Context());
@@ -36,6 +35,7 @@ public class TemplateController {
 
     @GetMapping("/update-password/accept")
     public String updatePasswordVerifyAuthEmail(@RequestParam String token) {
+        userService.checkAuthTokenUsedWithException(token);
         String email = userService.updatePasswordVerifyAuthEmail(token);
         logger.info("updatePasswordVerifyAuthEmail successfully: email={}", email);
         return templateEngine.process("VerifyAccept", new Context());

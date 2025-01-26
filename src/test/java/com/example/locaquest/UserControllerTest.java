@@ -20,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.transaction.Transactional;
 
 import com.example.locaquest.dto.LoginRequest;
+import com.example.locaquest.dto.EmailRequest;
+import com.example.locaquest.dto.PasswordRequest;
 import com.example.locaquest.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -103,9 +105,13 @@ public class UserControllerTest {
         "avail@mail.com, 202", 
     })
     void testChangePasswordSendAuthMail(String email, int expectedStatus) throws Exception {
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setEmail(email);
+
+        String json = objectMapper.writeValueAsString(emailRequest);
         MvcResult result = mockMvc.perform(post("/users/update-password/send-auth-email")
                 .contentType("application/json")
-                .content(email))
+                .content(json))
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         logger.info("testChangePasswordSendAuthMail: {}", result.getResponse().getContentAsString());
@@ -130,9 +136,13 @@ public class UserControllerTest {
         "avail@mail.com, true, 200", 
     })
     void testChangePasswordCheckVerified(String email, String output, int expectedStatus) throws Exception {
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setEmail(email);
+
+        String json = objectMapper.writeValueAsString(emailRequest);
         MvcResult result = mockMvc.perform(post("/users/update-password/check-verified")
                 .contentType("application/json")
-                .content(email))
+                .content(json))
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         assertEquals(result.getResponse().getContentAsString(), output);
@@ -190,10 +200,14 @@ public class UserControllerTest {
         TEST_TOKEN2 + ", Secret@Pass1, 200",
     })
     void testDeleteUser(String token, String password, int expectedStatus) throws Exception {
+        PasswordRequest passwordRequest = new PasswordRequest();
+        passwordRequest.setEmail(password);
+
+        String json = objectMapper.writeValueAsString(passwordRequest);
         MvcResult result = mockMvc.perform(post("/users/delete")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + token)
-                .content(password))
+                .content(json))
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         logger.info("testDeleteUser: {}", result.getResponse().getContentAsString());

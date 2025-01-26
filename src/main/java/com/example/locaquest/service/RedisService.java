@@ -2,9 +2,12 @@ package com.example.locaquest.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Value;
 
 import com.example.locaquest.model.User;
 
@@ -15,6 +18,10 @@ public class RedisService {
 
     private final String preregisterKey = "preregisterKey";
     private final String changePasswordKey = "changePasswordKey";
+    private final String authTokenKey = "authTokenKey";
+
+    @Value("${jwt.expiration.auth}")
+    private int jwtExpirationAuth;
 
     public RedisService(RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper) {
         this.redisTemplate = redisTemplate;
@@ -59,5 +66,13 @@ public class RedisService {
 
     public void deleteChangePasswordEmail(String email) {
         delete(changePasswordKey + email);
+    }
+
+    public void saveAuthToken(String token) {
+        save(authTokenKey + token, token, jwtExpirationAuth, TimeUnit.MINUTES);
+    }
+
+    public String getAuthToken(String token) {
+        return get(authTokenKey + token, String.class);
     }
 }

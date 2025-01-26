@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.example.locaquest.dto.LoginRequest;
+import com.example.locaquest.dto.EmailRequest;
+import com.example.locaquest.dto.PasswordRequest;
 import com.example.locaquest.dto.group.CreateGroup;
 import com.example.locaquest.dto.group.PasswordGroup;
 import com.example.locaquest.dto.group.UpdateGroup;
@@ -42,7 +44,8 @@ public class UserController {
     }
 
     @PostMapping("/register/check-verified")
-    public ResponseEntity<?> registerCheckVerified(@RequestBody String email) {
+    public ResponseEntity<?> registerCheckVerified(@RequestBody EmailRequest emailRequest) {
+        String email = emailRequest.getEmail();
         String token = userService.registerCheckVerified(email);
         logger.info("registerCheckVerified successful: email={}", email);
         return ResponseEntity.ok(token);
@@ -56,14 +59,16 @@ public class UserController {
     }
 
     @PostMapping("/update-password/send-auth-email")
-    public ResponseEntity<?> updatePasswordSendAuthEmail(@RequestBody String email) {
+    public ResponseEntity<?> updatePasswordSendAuthEmail(@RequestBody EmailRequest emailRequest) {
+        String email = emailRequest.getEmail();
         userService.updatePasswordSendAuthEmail(email);
         logger.info("updatePasswordSendAuthEmail successful: email={}", email);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("");
     }
 
     @PostMapping("/update-password/check-verified")
-    public ResponseEntity<?> updatePasswordCheckVerified(@RequestBody String email) {
+    public ResponseEntity<?> updatePasswordCheckVerified(@RequestBody EmailRequest emailRequest) {
+        String email = emailRequest.getEmail();
         boolean res = userService.updatePasswordCheckVerified(email);
         logger.info("updatePasswordCheckVerified successful: email={}", email);
         return ResponseEntity.ok(res);
@@ -90,8 +95,8 @@ public class UserController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestBody String password) {
-        userService.deleteUser(password);
+    public ResponseEntity<?> deleteUser(@RequestBody PasswordRequest passwordRequest) {
+        userService.deleteUser(passwordRequest.getPassword());
         logger.info("deleteUser successful: userId={}", userService.getCurrentUserId());
         return ResponseEntity.ok("");
     }
