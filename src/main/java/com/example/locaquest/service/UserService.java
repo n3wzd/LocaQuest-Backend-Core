@@ -1,7 +1,5 @@
 package com.example.locaquest.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,7 +26,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenManager jwtTokenManager;
     private final RedisService redisService;
-    static final private Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository userRepository, EmailSender emailSender, PasswordEncoder passwordEncoder, JwtTokenManager jwtTokenManager, RedisService redisService) {
         this.userRepository = userRepository;

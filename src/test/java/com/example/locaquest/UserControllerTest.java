@@ -37,7 +37,7 @@ public class UserControllerTest {
     static final private Logger logger = LoggerFactory.getLogger(UserControllerTest.class);
 
     private static final String TEST_AUTH_TOKEN1 = "";
-    private static final String TEST_AUTH_TOKEN2 = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqaGoxOTk5MTFAZ21haWwuY29tIiwiaWF0IjoxNzM3NzI3OTA2LCJleHAiOjE3Mzc4MzU5MDZ9.8ERiDPFIHUfYfw0JWfR0knU9lP7BlJ8hPNZ5b625bAI";
+    private static final String TEST_AUTH_TOKEN2 = "";
     private static final String TEST_TOKEN1 = "";
     private static final String TEST_TOKEN2 = "";
 
@@ -67,18 +67,6 @@ public class UserControllerTest {
     @ParameterizedTest
     @Order(2)
     @CsvSource({
-        TEST_AUTH_TOKEN1 + ", 200"
-    })
-    void testRegisterUser(String token, int expectedStatus) throws Exception {
-        MvcResult result = mockMvc.perform(get("/email/register/accept")
-                .param("token", token))
-                .andReturn();
-        logger.info("testRegisterUser: {}", result.getResponse().getContentAsString());
-    }
-
-    @ParameterizedTest
-    @Order(3)
-    @CsvSource({
         "alice@example.com, Password@123, 200", 
         "bob@example.com, asdfqwer, 400", 
         "Bob, Secret@Pass2, 400", 
@@ -98,6 +86,18 @@ public class UserControllerTest {
         logger.info("testLoginUser: {}", result.getResponse().getContentAsString());
     }
 
+    @ParameterizedTest
+    @Order(3)
+    @CsvSource({
+        TEST_AUTH_TOKEN1 + ", 200"
+    })
+    void testRegisterUser(String token, int expectedStatus) throws Exception {
+        MvcResult result = mockMvc.perform(get("/email/register/accept")
+                .param("token", token))
+                .andReturn();
+        logger.info("testRegisterUser: {}", result.getResponse().getContentAsString());
+    }
+    
     @ParameterizedTest
     @Order(4)
     @CsvSource({

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.locaquest.dto.MapRouteRequest;
 import com.example.locaquest.dto.PlaceRequest;
 import com.example.locaquest.dto.Place;
-import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.service.PlaceService;
 import com.example.locaquest.service.UserService;
 
@@ -32,25 +31,15 @@ public class PlaceController {
 
     @PostMapping("/search")
     public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest) {
-        try {
-            List<Place> result = placeService.search(placeRequest);
-            logger.info("searchPlaces successful: userId={}", userService.getCurrentUserId());
-            return ResponseEntity.ok(result);
-        } catch (ServiceException e) {
-            logger.warn("searchPlaces failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
-            return ResponseEntity.badRequest().body("searchPlaces failed");
-        }
+        List<Place> result = placeService.search(placeRequest);
+        logger.info("searchPlaces successful: userId={}", userService.getCurrentUserId());
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/route")
     public ResponseEntity<?> routeDestination(@RequestBody MapRouteRequest mapRouteRequest) {
-        try {
-            String result = placeService.route(mapRouteRequest);
-            logger.info("routeDestination successful: userId={}", userService.getCurrentUserId());
-            return ResponseEntity.ok(result);
-        } catch (ServiceException e) {
-            logger.warn("routeDestination failed: userId={}, {}", userService.getCurrentUserId(), e.toString());
-            return ResponseEntity.badRequest().body("routeDestination failed");
-        }
+        String result = placeService.route(mapRouteRequest);
+        logger.info("routeDestination successful: userId={}", userService.getCurrentUserId());
+        return ResponseEntity.ok(result);
     }
 }

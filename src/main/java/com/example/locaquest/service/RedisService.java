@@ -1,24 +1,24 @@
 package com.example.locaquest.service;
 
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 import com.example.locaquest.model.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class RedisService {
-    private RedisTemplate<String, Object> redisTemplate;
-    private ObjectMapper objectMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     private final String preregisterKey = "preregisterKey";
     private final String changePasswordKey = "changePasswordKey";
     private final String authTokenKey = "authTokenKey";
+    private final String userAchievementKey = "userAchievementKey";
 
     @Value("${jwt.expiration.auth}")
     private int jwtExpirationAuth;
@@ -74,5 +74,13 @@ public class RedisService {
 
     public String getAuthToken(String token) {
         return get(authTokenKey + token, String.class);
+    }
+
+    public void saveUserAchievement(int userId, Set<Integer> achievementSet) {
+        save(userAchievementKey + userId, achievementSet, 6, TimeUnit.HOURS);
+    }
+
+    public Set<Integer> getUserAchievement(int userId) {
+        return get(userAchievementKey + userId, Set.class);
     }
 }
