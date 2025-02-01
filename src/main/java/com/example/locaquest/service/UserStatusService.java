@@ -13,23 +13,30 @@ import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
 import com.example.locaquest.repogitory.AchievementRepository;
 import com.example.locaquest.repogitory.UserAchievementRepository;
+import com.example.locaquest.repogitory.UserStatisticRepository;
 
 @Service
-public class AchievementService {
+public class UserStatusService {
+    private final UserStatisticRepository userStatisticRepository;
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
     private final RedisService redisService;
     private final List<Achievement> achievementList;
 
-    public AchievementService(AchievementRepository achievementRepository, UserAchievementRepository userAchievementRepository, RedisService redisService) {
+    public UserStatusService(UserStatisticRepository userStatisticRepository, AchievementRepository achievementRepository, UserAchievementRepository userAchievementRepository, RedisService redisService) {
+        this.userStatisticRepository = userStatisticRepository;
         this.achievementRepository = achievementRepository;
         this.userAchievementRepository = userAchievementRepository;
         this.redisService = redisService;
         achievementList = this.achievementRepository.findAll();
     }
 
-    public List<Achievement> getUserAchievementList(int userId) {
-        Set<Integer> userAchievementSet = getUserAchievement(userId);
+    public UserStatistic getUserStatistics(int userId) {
+        return userStatisticRepository.findByUserId(userId);
+    }
+
+    public List<Achievement> getUserAchievements(int userId) {
+        Set<Integer> userAchievementSet = getUserAchievementSet(userId);
         List<Achievement> userAchiList = new ArrayList<>();
         for(Achievement achv : achievementList) {
             if(userAchievementSet.contains(achv.getAchvId())) {
@@ -39,8 +46,7 @@ public class AchievementService {
         return userAchiList;
     }
 
-    public void updateUserAchievementByUserStatistic(UserStatistic userData) {
-        int userId = userData.getUserId();
+    public void updateUserAchievementByUserStatistic(int userId, UserStatistic userData) {
         int exp = userData.getTotalExperience();
         int steps = userData.getTotalSteps();
         int dist = userData.getTotalDistance();
@@ -86,11 +92,11 @@ public class AchievementService {
     }
 
     private boolean hasAchievement(int userId, int achvId) {
-        Set<Integer> userAchvSet = getUserAchievement(userId);
+        Set<Integer> userAchvSet = getUserAchievementSet(userId);
         return userAchvSet.contains(achvId);
     }
 
-    private Set<Integer> getUserAchievement(int userId) {
+    private Set<Integer> getUserAchievementSet(int userId) {
         Set<Integer> userAchievementSet = redisService.getUserAchievement(userId);
         if(userAchievementSet == null) {
             userAchievementSet = updateUserAchievementCache(userId);

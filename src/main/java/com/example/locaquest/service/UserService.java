@@ -8,11 +8,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.locaquest.component.JwtTokenManager;
 import com.example.locaquest.dto.LoginRequest;
+import com.example.locaquest.exception.AlreadyVerifiedException;
 import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.EmailNotExistsException;
 import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.exception.WrongPasswordException;
-import com.example.locaquest.exception.AlreadyVerifiedException;
 import com.example.locaquest.model.User;
 import com.example.locaquest.repogitory.UserRepository;
 
@@ -33,11 +33,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenManager = jwtTokenManager;
         this.redisService = redisService;
-    }
-
-    public int getCurrentUserId() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return Integer.parseInt(userDetails.getUsername());
     }
 
     public void preregisterUser(User user) {
@@ -112,8 +107,7 @@ public class UserService {
         redisService.deleteChangePasswordEmail(email);
     }
 
-    public User updateUser(User newUser) {
-        int userId = getCurrentUserId();
+    public User updateUser(int userId, User newUser) {
         User user = userRepository.findByUserId(userId);
 
         String encodedPassword = passwordEncoder.encode(newUser.getPassword());
@@ -123,8 +117,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(String password) {
-        int userId = getCurrentUserId();
+    public void deleteUser(int userId, String password) {
         User user = userRepository.findByUserId(userId);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new WrongPasswordException(user.getEmail());

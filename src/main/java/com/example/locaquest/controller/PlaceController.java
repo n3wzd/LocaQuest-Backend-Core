@@ -14,32 +14,32 @@ import com.example.locaquest.dto.MapRouteRequest;
 import com.example.locaquest.dto.PlaceRequest;
 import com.example.locaquest.dto.Place;
 import com.example.locaquest.service.PlaceService;
-import com.example.locaquest.service.UserService;
+import com.example.locaquest.service.TokenService;
 
 @RestController
 @RequestMapping("/places")
 public class PlaceController {
 
-    private final UserService userService;
+    private final TokenService tokenService;
     private final PlaceService placeService;
     static final private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public PlaceController(UserService userService, PlaceService placeService) {
-        this.userService = userService;
+    public PlaceController(TokenService tokenService, PlaceService placeService) {
+        this.tokenService = tokenService;
         this.placeService = placeService;
     }
 
     @PostMapping("/search")
     public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest) {
         List<Place> result = placeService.search(placeRequest);
-        logger.info("searchPlaces successful: userId={}", userService.getCurrentUserId());
+        logger.info("searchPlaces successful: userId={}", tokenService.getUserId());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/route")
     public ResponseEntity<?> routeDestination(@RequestBody MapRouteRequest mapRouteRequest) {
         String result = placeService.route(mapRouteRequest);
-        logger.info("routeDestination successful: userId={}", userService.getCurrentUserId());
+        logger.info("routeDestination successful: userId={}", tokenService.getUserId());
         return ResponseEntity.ok(result);
     }
 }

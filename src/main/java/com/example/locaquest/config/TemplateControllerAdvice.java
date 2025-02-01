@@ -4,24 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import com.example.locaquest.controller.TemplateController;
+import com.example.locaquest.exception.AlreadyVerifiedException;
 import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.exception.TokenException;
-import com.example.locaquest.exception.AlreadyVerifiedException;
 
 @ControllerAdvice(assignableTypes = TemplateController.class)
 public class TemplateControllerAdvice {
 
-    private final SpringTemplateEngine templateEngine;
     static final private Logger logger = LoggerFactory.getLogger(TemplateControllerAdvice.class);
-
-    public TemplateControllerAdvice(SpringTemplateEngine templateEngine) {
-        this.templateEngine = templateEngine;
-    }
 
     @ExceptionHandler(TokenException.class)
     public String handleTokenException(TokenException e) {

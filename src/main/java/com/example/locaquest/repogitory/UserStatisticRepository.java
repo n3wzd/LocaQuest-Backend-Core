@@ -7,5 +7,5 @@ import com.example.locaquest.model.UserStatistic;
 
 @Repository
 public interface UserStatisticRepository extends JpaRepository<UserStatistic, String> {
-    
+    UserStatistic findByUserId(int userId);
 }

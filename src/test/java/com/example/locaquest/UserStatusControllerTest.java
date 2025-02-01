@@ -17,28 +17,28 @@ import jakarta.transaction.Transactional;
 
 import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.model.Achievement;
-import com.example.locaquest.service.AchievementService;
+import com.example.locaquest.service.UserStatusService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 // @Transactional
-public class AchievementControllerTest {
+public class UserStatusControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private AchievementService achievementService;
+    private UserStatusService userStatusService;
 
     final private ObjectMapper objectMapper = new ObjectMapper();
-    static final private Logger logger = LoggerFactory.getLogger(AchievementControllerTest.class);
+    static final private Logger logger = LoggerFactory.getLogger(UserStatusControllerTest.class);
 
     @ParameterizedTest
     @CsvSource({
         "12", 
     })
     void testFind(int userId) throws Exception {
-        List<Achievement> res = achievementService.getUserAchievementList(userId);
+        List<Achievement> res = userStatusService.getUserAchievements(userId);
         logger.info("testFind: {}, {}", userId, res.toString());
     }
 
@@ -48,12 +48,11 @@ public class AchievementControllerTest {
     })
     void testScan(int userId, int exp, int steps, int dist) throws Exception {
         UserStatistic userStatistic = new UserStatistic();
-        userStatistic.setUserId(userId);
         userStatistic.setTotalExperience(exp);
         userStatistic.setTotalSteps(steps);
         userStatistic.setTotalDistance(dist);
 
-        achievementService.updateUserAchievementByUserStatistic(userStatistic);
+        userStatusService.updateUserAchievementByUserStatistic(userId, userStatistic);
         logger.info("testScan: {}", userId);
     }
 }

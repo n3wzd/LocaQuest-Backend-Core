@@ -10,27 +10,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import com.example.locaquest.dto.LoginRequest;
 import com.example.locaquest.dto.EmailRequest;
+import com.example.locaquest.dto.LoginRequest;
 import com.example.locaquest.dto.PasswordRequest;
 import com.example.locaquest.dto.group.CreateGroup;
 import com.example.locaquest.dto.group.PasswordGroup;
 import com.example.locaquest.dto.group.UpdateGroup;
-
 import com.example.locaquest.model.User;
 import com.example.locaquest.service.UserService;
+import com.example.locaquest.service.TokenService;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final TokenService tokenService;
     static final private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserService userService, SpringTemplateEngine templateEngine) {
+    public UserController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/register/send-auth-mail")
@@ -89,15 +90,17 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException("Invalid dto");
         }
-        userService.updateUser(user);
-        logger.info("updateUser successful: userId={}", userService.getCurrentUserId());
+        int userId = tokenService.getUserId();
+        userService.updateUser(userId, user);
+        logger.info("updateUser successful: userId={}", userId);
         return ResponseEntity.ok("User Profile updated successfully.");
     }
 
     @PostMapping("/delete")
     public ResponseEntity<?> deleteUser(@RequestBody PasswordRequest passwordRequest) {
-        userService.deleteUser(passwordRequest.getPassword());
-        logger.info("deleteUser successful: userId={}", userService.getCurrentUserId());
+        int userId = tokenService.getUserId();
+        userService.deleteUser(userId, passwordRequest.getPassword());
+        logger.info("deleteUser successful: userId={}", userId);
         return ResponseEntity.ok("");
     }
 }
