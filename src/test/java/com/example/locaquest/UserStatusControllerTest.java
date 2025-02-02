@@ -10,13 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import jakarta.transaction.Transactional;
 
 import com.example.locaquest.model.UserStatistic;
-import com.example.locaquest.model.Achievement;
+import com.example.locaquest.dto.AchievementData;
 import com.example.locaquest.service.UserStatusService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,16 +33,16 @@ public class UserStatusControllerTest {
 
     @ParameterizedTest
     @CsvSource({
-        "12", 
+        "13", 
     })
-    void testFind(int userId) throws Exception {
-        List<Achievement> res = userStatusService.getUserAchievements(userId);
-        logger.info("testFind: {}, {}", userId, res.toString());
+    void testFindAll(int userId) throws Exception {
+        List<AchievementData> res = userStatusService.getAchievedUserAchievements(userId);
+        logger.info("testFindAll: {}, {}", userId, res.toString());
     }
 
     @ParameterizedTest
     @CsvSource({
-        "12, 5000, 15000, 200000",
+        "13, 5000, 15000, 200000",
     })
     void testScan(int userId, int exp, int steps, int dist) throws Exception {
         UserStatistic userStatistic = new UserStatistic();

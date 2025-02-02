@@ -32,19 +32,17 @@ public class JwtTokenManager {
     @Value("${jwt.expiration.auth}")
     private int jwtExpirationAuth;
 
-    private String generateToken(String subject, String secretKey, int validityInMinutes) {
-        Claims claims = Jwts.claims().setSubject(subject);
+    private JwtBuilder generateToken(String secretKey, int validityInMinutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, validityInMinutes);
         Date validity = calendar.getTime();
         Date now = new Date();
 
         JwtBuilder token = Jwts.builder()
-                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(SignatureAlgorithm.HS256, secretKey);
-        return token.compact();
+        return token;
     }
 
     private boolean validateToken(String token, String secretKey) {
@@ -81,11 +79,16 @@ public class JwtTokenManager {
     }
 
     public String generateAuthToken(String email) {
-        return generateToken(email, jwtKeyAuth, jwtExpirationAuth);
+        Claims claims = Jwts.claims().setSubject(email);
+        JwtBuilder token = generateToken(jwtKeyAuth, jwtExpirationAuth);
+        return token.setClaims(claims).compact();
     }
 
-    public String generateLoginToken(String userId) {
-        return generateToken(userId, jwtKeyLogin, jwtExpirationAccess);
+    public String generateLoginToken(String userId, String name) {
+        Claims claims = Jwts.claims().setSubject(userId);
+        claims.put("name", name);
+        JwtBuilder token = generateToken(jwtKeyLogin, jwtExpirationAccess);
+        return token.setClaims(claims).compact();
     }
 
     public String getEmailByAuthToken(String token) {

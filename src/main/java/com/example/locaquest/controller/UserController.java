@@ -82,7 +82,7 @@ public class UserController {
         }
         userService.updatePasswordByEmail(user.getPassword(), user.getEmail());
         logger.info("updatePassword successful: email={}", user.getEmail());
-        return ResponseEntity.ok("Password updated successfully.");
+        return ResponseEntity.ok("");
     }
 
     @PostMapping("/update")
@@ -91,9 +91,9 @@ public class UserController {
             throw new IllegalArgumentException("Invalid dto");
         }
         int userId = tokenService.getUserId();
-        userService.updateUser(userId, user);
+        String token = userService.updateUser(userId, user);
         logger.info("updateUser successful: userId={}", userId);
-        return ResponseEntity.ok("User Profile updated successfully.");
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/delete")

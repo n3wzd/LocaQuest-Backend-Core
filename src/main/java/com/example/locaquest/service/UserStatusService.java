@@ -2,15 +2,16 @@ package com.example.locaquest.service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.example.locaquest.dto.AchievementData;
 import com.example.locaquest.model.Achievement;
-import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
+import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.repogitory.AchievementRepository;
 import com.example.locaquest.repogitory.UserAchievementRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
@@ -35,49 +36,32 @@ public class UserStatusService {
         return userStatisticRepository.findByUserId(userId);
     }
 
-    public List<Achievement> getUserAchievements(int userId) {
+    public List<AchievementData> getAllUserAchievements(int userId) {
+        List<AchievementData> userAchiList = new ArrayList<>();
+        UserStatistic userData = getUserStatistics(userId);
+        for(Achievement achv : achievementList) {
+            int progress = getAchievementProgress(achv.getAchvId(), userData);
+            userAchiList.add(new AchievementData(achv.getAchvId(), achv.getName(), achv.getDesc(), progress));
+        }
+        return userAchiList;
+    }
+
+    public List<AchievementData> getAchievedUserAchievements(int userId) {
         Set<Integer> userAchievementSet = getUserAchievementSet(userId);
-        List<Achievement> userAchiList = new ArrayList<>();
+        List<AchievementData> userAchiList = new ArrayList<>();
         for(Achievement achv : achievementList) {
             if(userAchievementSet.contains(achv.getAchvId())) {
-                userAchiList.add(achv);
+                userAchiList.add(new AchievementData(achv.getAchvId(), achv.getName(), achv.getDesc(), 100));
             }
         }
         return userAchiList;
     }
 
     public void updateUserAchievementByUserStatistic(int userId, UserStatistic userData) {
-        int exp = userData.getTotalExperience();
-        int steps = userData.getTotalSteps();
-        int dist = userData.getTotalDistance();
-
-        int[][] thresholdsExp = {
-            {500, 0},
-            {1000, 1},
-            {10000, 2}
-        };
-        int[][] thresholdsSteps = {
-            {10000, 3},
-            {50000, 4}
-        };
-        int[][] thresholdsDist = {
-            {100000, 5},
-            {500000, 6}
-        };
-
-        for (int[] threshold : thresholdsExp) {
-            if (exp >= threshold[0]) {
-                achieveAchievement(userId, threshold[1]);
-            }
-        }
-        for (int[] threshold : thresholdsSteps) {
-            if (steps >= threshold[0]) {
-                achieveAchievement(userId, threshold[1]);
-            }
-        }
-        for (int[] threshold : thresholdsDist) {
-            if (dist >= threshold[0]) {
-                achieveAchievement(userId, threshold[1]);
+        for(Achievement achv: achievementList) {
+            int achvId = achv.getAchvId();
+            if(checkAchievementCondition(achvId, userData)) {
+                achieveAchievement(userId, achvId);
             }
         }
     }
@@ -112,5 +96,46 @@ public class UserStatusService {
         }
         redisService.saveUserAchievement(userId, userAchievementSet);
         return userAchievementSet;
+    }
+
+    private boolean checkAchievementCondition(int achvId, UserStatistic userData) {
+        return getAchievementProgress(achvId, userData) == 100;
+    }
+
+    private int getAchievementProgress(int achvId, UserStatistic userData) {
+        double a = 0, b = 1;
+        switch (achvId) {
+            case 0 -> {
+                a = userData.getTotalExperience();
+                b = 500;
+            }
+            case 1 -> {
+                a = userData.getTotalExperience();
+                b = 1000;
+            }
+            case 2 -> {
+                a = userData.getTotalExperience();
+                b = 10000;
+            }
+            case 3 -> {
+                a = userData.getTotalSteps();
+                b = 10000;
+            }
+            case 4 -> {
+                a = userData.getTotalSteps();
+                b = 50000;
+            }
+            case 5 -> {
+                a = userData.getTotalDistance();
+                b = 100000;
+            }
+            case 6 -> {
+                a = userData.getTotalDistance();
+                b = 500000;
+            }
+            default -> {
+            }
+        }
+        return (int)(a >= b ? 100 : a / b * 100);
     }
 }

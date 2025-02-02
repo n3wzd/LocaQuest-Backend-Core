@@ -7,13 +7,13 @@ import com.example.locaquest.model.Achievement;
 
 public class UserStatusResponse {
     private UserStatistic userStatistic;
-    private List<Achievement> achievementList;
+    private List<AchievementData> achievementList;
 
     public void setUserStatistic(UserStatistic userStatistic) {
         this.userStatistic = userStatistic;
     }
 
-    public void setAchievementList(List<Achievement> achievementList) {
+    public void setAchievementList(List<AchievementData> achievementList) {
         this.achievementList = achievementList;
     }
 
@@ -21,7 +21,7 @@ public class UserStatusResponse {
         return userStatistic;
     }
 
-    public List<Achievement> getAchievementList() {
+    public List<AchievementData> getAchievementList() {
         return achievementList;
     }
 }

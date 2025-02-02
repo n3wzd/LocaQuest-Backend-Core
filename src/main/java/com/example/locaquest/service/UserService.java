@@ -65,7 +65,7 @@ public class UserService {
         if(user == null) {
             throw new EmailNotExistsException(email);
         }
-        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()));
+        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
     }
 
     public String login(LoginRequest loginRequest) {
@@ -76,7 +76,7 @@ public class UserService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new WrongPasswordException(loginRequest.getEmail());
         }
-        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()));
+        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
     }
 
     public void updatePasswordSendAuthEmail(String email) {
@@ -107,13 +107,14 @@ public class UserService {
         redisService.deleteChangePasswordEmail(email);
     }
 
-    public User updateUser(int userId, User newUser) {
+    public String updateUser(int userId, User newUser) {
         User user = userRepository.findByUserId(userId);
 
         String encodedPassword = passwordEncoder.encode(newUser.getPassword());
         user.setPassword(encodedPassword);
         user.setName(newUser.getName());
-        return userRepository.save(user);
+        userRepository.save(user);
+        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
     }
 
     @Transactional
