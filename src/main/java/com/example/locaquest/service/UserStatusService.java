@@ -1,13 +1,16 @@
 package com.example.locaquest.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.example.locaquest.dto.AchievementData;
+import com.example.locaquest.exception.ServiceException;
+import com.example.locaquest.component.StaticData;
 import com.example.locaquest.model.Achievement;
 import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
@@ -22,13 +25,15 @@ public class UserStatusService {
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
     private final RedisService redisService;
+    private final StaticData staticData;
     private final List<Achievement> achievementList;
 
-    public UserStatusService(UserStatisticRepository userStatisticRepository, AchievementRepository achievementRepository, UserAchievementRepository userAchievementRepository, RedisService redisService) {
+    public UserStatusService(UserStatisticRepository userStatisticRepository, AchievementRepository achievementRepository, UserAchievementRepository userAchievementRepository, RedisService redisService, StaticData staticData) {
         this.userStatisticRepository = userStatisticRepository;
         this.achievementRepository = achievementRepository;
         this.userAchievementRepository = userAchievementRepository;
         this.redisService = redisService;
+        this.staticData = staticData;
         achievementList = this.achievementRepository.findAll();
     }
 
@@ -36,25 +41,57 @@ public class UserStatusService {
         return userStatisticRepository.findByUserId(userId);
     }
 
+    public int getLevel(int exp) {
+        int a = staticData.getExpParamA();
+        int b = staticData.getExpParamB();
+        int c = staticData.getExpParamC() - exp;
+
+        int d = b * b - 4 * a * c;
+        if (d < 0) {
+            throw new ServiceException("Invalid EXP value");
+        }
+        return (int) ((-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a)) + 1;
+    }
+
+    public int getExpLimit(int level) {
+        int a = staticData.getExpParamA();
+        int b = staticData.getExpParamB();
+        int c = staticData.getExpParamC();
+        level--;
+        return (int) (a * Math.pow(level, 2)) + b * level + c;
+    }
+
+    public List<Integer> getExpLimitList() {
+        List<Integer> expLimitList = new ArrayList<>(Arrays.asList(0));
+        int maxLevel = staticData.getExpParamA();
+        for(int i = 1; i < maxLevel; i++) {
+            expLimitList.add(getExpLimit(i));
+        }
+        return expLimitList;
+    }
+
     public List<AchievementData> getAllUserAchievements(int userId) {
-        List<AchievementData> userAchiList = new ArrayList<>();
+        Map<String, String> userAchievementMap = getUserAchievementMap(userId);
+        List<AchievementData> userAchvList = new ArrayList<>();
         UserStatistic userData = getUserStatistics(userId);
         for(Achievement achv : achievementList) {
             int progress = getAchievementProgress(achv.getAchvId(), userData);
-            userAchiList.add(new AchievementData(achv.getAchvId(), achv.getName(), achv.getDesc(), progress));
+            String achieveAt = userAchievementMap.get(String.valueOf(achv.getAchvId()));
+            userAchvList.add(new AchievementData(achv.getAchvId(), achv.getName(), achv.getDesc(), progress, achieveAt));
         }
-        return userAchiList;
+        return userAchvList;
     }
 
     public List<AchievementData> getAchievedUserAchievements(int userId) {
-        Set<Integer> userAchievementSet = getUserAchievementSet(userId);
-        List<AchievementData> userAchiList = new ArrayList<>();
+        Map<String, String> userAchievementMap = getUserAchievementMap(userId);
+        List<AchievementData> userAchvList = new ArrayList<>();
         for(Achievement achv : achievementList) {
-            if(userAchievementSet.contains(achv.getAchvId())) {
-                userAchiList.add(new AchievementData(achv.getAchvId(), achv.getName(), achv.getDesc(), 100));
+            String achieveAt = userAchievementMap.get(String.valueOf(achv.getAchvId()));
+            if(achieveAt != null) {
+                userAchvList.add(new AchievementData(achv.getAchvId(), achv.getName(), achv.getDesc(), 100, achieveAt));
             }
         }
-        return userAchiList;
+        return userAchvList;
     }
 
     public void updateUserAchievementByUserStatistic(int userId, UserStatistic userData) {
@@ -76,26 +113,28 @@ public class UserStatusService {
     }
 
     private boolean hasAchievement(int userId, int achvId) {
-        Set<Integer> userAchvSet = getUserAchievementSet(userId);
-        return userAchvSet.contains(achvId);
+        Map<String, String> userAchvMap = getUserAchievementMap(userId);
+        return userAchvMap.get(String.valueOf(achvId)) != null;
     }
 
-    private Set<Integer> getUserAchievementSet(int userId) {
-        Set<Integer> userAchievementSet = redisService.getUserAchievement(userId);
-        if(userAchievementSet == null) {
-            userAchievementSet = updateUserAchievementCache(userId);
+    private Map<String, String> getUserAchievementMap(int userId) {
+        Map<String, String> userAchievementMap = redisService.getUserAchievement(userId);
+        if(userAchievementMap == null) {
+            userAchievementMap = updateUserAchievementCache(userId);
         }
-        return userAchievementSet;
+        return userAchievementMap;
     }
 
-    private Set<Integer> updateUserAchievementCache(int userId) {
+    private Map<String, String> updateUserAchievementCache(int userId) {
         List<UserAchievement> userAchievementDatas = userAchievementRepository.findByIdUserId(userId);
-        Set<Integer> userAchievementSet = new HashSet<>();
+        Map<String, String> userAchievementMap = new HashMap<>();
         for (UserAchievement userAchievement : userAchievementDatas) {
-            userAchievementSet.add(userAchievement.getId().getAchvId());
+            int achvId = userAchievement.getId().getAchvId();
+            String date = userAchievement.getAchievedAt().toString();
+            userAchievementMap.put(String.valueOf(achvId), date);
         }
-        redisService.saveUserAchievement(userId, userAchievementSet);
-        return userAchievementSet;
+        redisService.saveUserAchievement(userId, userAchievementMap);
+        return userAchievementMap;
     }
 
     private boolean checkAchievementCondition(int achvId, UserStatistic userData) {
@@ -106,31 +145,31 @@ public class UserStatusService {
         double a = 0, b = 1;
         switch (achvId) {
             case 0 -> {
-                a = userData.getTotalExperience();
+                a = userData.getExp();
                 b = 500;
             }
             case 1 -> {
-                a = userData.getTotalExperience();
+                a = userData.getExp();
                 b = 1000;
             }
             case 2 -> {
-                a = userData.getTotalExperience();
+                a = userData.getExp();
                 b = 10000;
             }
             case 3 -> {
-                a = userData.getTotalSteps();
+                a = userData.getSteps();
                 b = 10000;
             }
             case 4 -> {
-                a = userData.getTotalSteps();
+                a = userData.getSteps();
                 b = 50000;
             }
             case 5 -> {
-                a = userData.getTotalDistance();
+                a = userData.getDistance();
                 b = 100000;
             }
             case 6 -> {
-                a = userData.getTotalDistance();
+                a = userData.getDistance();
                 b = 500000;
             }
             default -> {

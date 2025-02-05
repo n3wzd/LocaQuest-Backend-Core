@@ -1,6 +1,6 @@
 package com.example.locaquest.service;
 
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -76,11 +76,11 @@ public class RedisService {
         return get(authTokenKey + token, String.class);
     }
 
-    public void saveUserAchievement(int userId, Set<Integer> achievementSet) {
+    public void saveUserAchievement(int userId, Map<String, String> achievementSet) {
         save(userAchievementKey + userId, achievementSet, 6, TimeUnit.HOURS);
     }
 
-    public Set<Integer> getUserAchievement(int userId) {
-        return get(userAchievementKey + userId, Set.class);
+    public Map<String, String> getUserAchievement(int userId) {
+        return get(userAchievementKey + userId, Map.class);
     }
 }

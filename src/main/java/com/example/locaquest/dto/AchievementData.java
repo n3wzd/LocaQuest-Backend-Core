@@ -5,12 +5,14 @@ public class AchievementData {
     private String name;
     private String desc;
     private int progress;
+    private String achievedAt;
 
-    public AchievementData(int achvId, String name, String desc, int progress) {
+    public AchievementData(int achvId, String name, String desc, int progress, String achievedAt) {
         this.achvId = achvId;
         this.name = name;
         this.desc = desc;
         this.progress = progress;
+        this.achievedAt = achievedAt;
     }
 
     public int getAchvId() {
@@ -43,5 +45,13 @@ public class AchievementData {
 
     public void setProgress(int progress) {
         this.progress = progress;
+    }
+
+    public String getAchievedAt() {
+        return achievedAt;
+    }
+
+    public void setProgress(String achievedAt) {
+        this.achievedAt = achievedAt;
     }
 }

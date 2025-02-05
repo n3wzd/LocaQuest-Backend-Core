@@ -31,7 +31,7 @@ public class UserAchievement {
         return id;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDateTime getAchievedAt() {
         return achievedAt;
     }
 }

@@ -27,8 +27,8 @@ spring:
     timeout: ${SPRING_REDIS_TIMEOUT}
 logging:
   level:
-    org.springframework: OFF
-    org.springframework.web: OFF
+    org.springframework: DEBUG
+    org.springframework.web: DEBUG
     org.hibernate: OFF
     org.apache: OFF
     org.apache.catalina: OFF
@@ -43,3 +43,9 @@ jwt:
     auth: ${SPRING_JWT_VERIFICATION_ACCESS}
 google:
   key: ${GOOGLE_PLACE_API_KEY}
+static:
+  level:
+    maxLevel: 100
+    expParamA: 100
+    expParamB: 500
+    expParamC: 1000

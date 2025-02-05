@@ -13,44 +13,44 @@ public class UserStatistic {
     @Column(name = "user_id", nullable = false, unique = true, updatable = false)
     private int userId;
 
-    @Column(name = "total_experience", nullable = false)
-    private int totalExperience;
+    @Column(name = "exp", nullable = false)
+    private int exp;
 
-    @Column(name = "total_steps", nullable = false)
-    private int totalSteps;
+    @Column(name = "steps", nullable = false)
+    private int steps;
 
-    @Column(name = "total_distance", nullable = false)
-    private int totalDistance;
+    @Column(name = "distance", nullable = false)
+    private int distance;
 
     public int getUserId() {
         return userId;
     }
 
-    public int getTotalExperience() {
-        return totalExperience;
+    public int getExp() {
+        return exp;
     }
 
-    public int getTotalSteps() {
-        return totalSteps;
+    public int getSteps() {
+        return steps;
     }
 
-    public int getTotalDistance() {
-        return totalDistance;
+    public int getDistance() {
+        return distance;
     }
 
     public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public void setTotalExperience(int totalExperience) {
-        this.totalExperience = totalExperience;
+    public void setExp(int exp) {
+        this.exp = exp;
     }
 
-    public void setTotalSteps(int totalSteps) {
-        this.totalSteps = totalSteps;
+    public void setSteps(int steps) {
+        this.steps = steps;
     }
 
-    public void setTotalDistance(int totalDistance) {
-        this.totalDistance = totalDistance;
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }

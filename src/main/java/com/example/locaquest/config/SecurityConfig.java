@@ -39,7 +39,8 @@ public class SecurityConfig {
             "/users/update-password/send-auth-email",
             "/template/update-password/accept",
             "/users/update-password/check-verified",
-            "/users/update-password"
+            "/users/update-password",
+            "/update/"
         );
 
         http

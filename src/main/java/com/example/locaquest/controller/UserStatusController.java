@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.locaquest.dto.UserStatusResponse;
 import com.example.locaquest.dto.AchievementData;
+import com.example.locaquest.dto.UserStatusResponse;
 import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.service.TokenService;
 import com.example.locaquest.service.UserStatusService;
@@ -34,9 +34,13 @@ public class UserStatusController {
         int userId = tokenService.getUserId();
         UserStatistic userStatstic = userStatusService.getUserStatistics(userId);
         List<AchievementData> achievementList = userStatusService.getAllUserAchievements(userId);
+        int exp = userStatstic.getExp();
 
         UserStatusResponse result = new UserStatusResponse();
-        result.setUserStatistic(userStatstic);
+        result.setExp(exp);
+        result.setLevel(userStatusService.getLevel(exp));
+        result.setSteps(userStatstic.getSteps());
+        result.setDistance(userStatstic.getDistance());
         result.setAchievementList(achievementList);
         logger.info("getAll successful: userId={}", userId);
         return ResponseEntity.ok(result);
