@@ -18,7 +18,7 @@ public class TemplateController {
 
     private final UserService userService;
     private final SpringTemplateEngine templateEngine;
-    static final private Logger logger = LoggerFactory.getLogger(UserController.class);
+    static final private Logger logger = LoggerFactory.getLogger(TemplateController.class);
 
     public TemplateController(UserService userService, SpringTemplateEngine templateEngine) {
         this.userService = userService;

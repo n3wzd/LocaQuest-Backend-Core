@@ -27,8 +27,8 @@ spring:
     timeout: ${SPRING_REDIS_TIMEOUT}
 logging:
   level:
-    org.springframework: DEBUG
-    org.springframework.web: DEBUG
+    org.springframework: OFF
+    org.springframework.web: OFF
     org.hibernate: OFF
     org.apache: OFF
     org.apache.catalina: OFF

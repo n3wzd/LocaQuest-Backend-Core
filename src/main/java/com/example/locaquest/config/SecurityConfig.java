@@ -40,7 +40,8 @@ public class SecurityConfig {
             "/template/update-password/accept",
             "/users/update-password/check-verified",
             "/users/update-password",
-            "/update/"
+            "/update/",
+            "/activity/get-login-token-key"
         );
 
         http

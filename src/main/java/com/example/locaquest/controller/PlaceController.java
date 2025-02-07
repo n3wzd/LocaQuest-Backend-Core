@@ -22,7 +22,7 @@ public class PlaceController {
 
     private final TokenService tokenService;
     private final PlaceService placeService;
-    static final private Logger logger = LoggerFactory.getLogger(UserController.class);
+    static final private Logger logger = LoggerFactory.getLogger(PlaceController.class);
 
     public PlaceController(TokenService tokenService, PlaceService placeService) {
         this.tokenService = tokenService;

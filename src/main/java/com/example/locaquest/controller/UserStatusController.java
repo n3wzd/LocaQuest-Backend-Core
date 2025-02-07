@@ -22,7 +22,7 @@ public class UserStatusController {
 
     private final TokenService tokenService;
     private final UserStatusService userStatusService;
-    static final private Logger logger = LoggerFactory.getLogger(UserController.class);
+    static final private Logger logger = LoggerFactory.getLogger(UserStatusController.class);
 
     public UserStatusController(TokenService tokenService, UserStatusService userStatusService) {
         this.tokenService = tokenService;

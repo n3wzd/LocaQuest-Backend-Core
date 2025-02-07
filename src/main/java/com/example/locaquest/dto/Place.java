@@ -3,6 +3,11 @@ package com.example.locaquest.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Place {
     private String name;
     private double latitude = 0;
@@ -11,58 +16,6 @@ public class Place {
     private int reviewCount = 0;
     private List<String> types = new ArrayList<>();
     private double distanceFromOrigin = 0;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
-
-    public List<String> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<String> types) {
-        this.types = types;
-    }
-
-    public int getReviewCount() {
-        return reviewCount;
-    }
-
-    public void setReviewCount(int reviewCount) {
-        this.reviewCount = reviewCount;
-    }
-
-    public double getDistanceFromOrigin() {
-        return distanceFromOrigin;
-    }
 
     public void setDistanceFromOrigin(double lat, double lon) {
         this.distanceFromOrigin = calculateDistance(lat, lon, this.latitude, this.longitude);

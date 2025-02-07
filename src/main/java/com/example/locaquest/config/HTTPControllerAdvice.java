@@ -9,13 +9,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.example.locaquest.controller.UserController;
 import com.example.locaquest.controller.PlaceController;
+import com.example.locaquest.controller.UserStatusController;
+import com.example.locaquest.controller.UpdateController;
+import com.example.locaquest.controller.ActivityController;
 import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.EmailNotExistsException;
 import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.exception.WrongPasswordException;
 import com.example.locaquest.exception.TokenException;
 
-@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class })
+@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class, UserStatusController.class, UpdateController.class, ActivityController.class })
 public class HTTPControllerAdvice {
 
     static final private Logger logger = LoggerFactory.getLogger(HTTPControllerAdvice.class);

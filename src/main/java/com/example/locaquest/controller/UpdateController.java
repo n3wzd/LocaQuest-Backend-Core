@@ -18,7 +18,7 @@ public class UpdateController {
 
     private final StaticData staticData;
     private final UserStatusService userStatusService;
-    static final private Logger logger = LoggerFactory.getLogger(UserController.class);
+    static final private Logger logger = LoggerFactory.getLogger(UpdateController.class);
 
     public UpdateController(StaticData staticData, UserStatusService userStatusService) {
         this.staticData = staticData;
