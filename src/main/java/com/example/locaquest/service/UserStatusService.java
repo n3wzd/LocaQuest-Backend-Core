@@ -8,9 +8,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.example.locaquest.component.StaticData;
 import com.example.locaquest.dto.AchievementData;
 import com.example.locaquest.exception.ServiceException;
-import com.example.locaquest.component.StaticData;
 import com.example.locaquest.model.Achievement;
 import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
@@ -19,21 +19,21 @@ import com.example.locaquest.repogitory.AchievementRepository;
 import com.example.locaquest.repogitory.UserAchievementRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
 
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserStatusService {
     private final UserStatisticRepository userStatisticRepository;
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
     private final RedisService redisService;
     private final StaticData staticData;
-    private final List<Achievement> achievementList;
+    private List<Achievement> achievementList;
 
-    public UserStatusService(UserStatisticRepository userStatisticRepository, AchievementRepository achievementRepository, UserAchievementRepository userAchievementRepository, RedisService redisService, StaticData staticData) {
-        this.userStatisticRepository = userStatisticRepository;
-        this.achievementRepository = achievementRepository;
-        this.userAchievementRepository = userAchievementRepository;
-        this.redisService = redisService;
-        this.staticData = staticData;
+    @PostConstruct
+    public void init() {
         achievementList = this.achievementRepository.findAll();
     }
 

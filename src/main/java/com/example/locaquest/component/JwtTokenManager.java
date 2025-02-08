@@ -18,10 +18,10 @@ import com.example.locaquest.exception.TokenException;
 public class JwtTokenManager {
 
     @Value("${jwt.key.login}")
-    private String jwtKeyLogin;
+    private String jwtKeyLogin;  // base64Encoded
 
     @Value("${jwt.key.auth}")
-    private String jwtKeyAuth;
+    private String jwtKeyAuth;  // base64Encoded
 
     @Value("${jwt.expiration.access}")
     private int jwtExpirationAccess;

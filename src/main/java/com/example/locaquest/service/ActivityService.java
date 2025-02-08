@@ -4,7 +4,6 @@ import javax.crypto.Cipher;
 
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +16,6 @@ public class ActivityService {
 
     @Value("${jwt.key.login}")
     private String jwtKeyLogin;
-
-    public ActivityService() {
-        
-    }
 
     public String getLoginTokenKey(String publicKey) {
         try {

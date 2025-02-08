@@ -14,13 +14,21 @@ public class UserStatistic {
     private int userId;
 
     @Column(name = "exp", nullable = false)
-    private int exp;
+    private int exp = 0;
 
     @Column(name = "steps", nullable = false)
-    private int steps;
+    private int steps = 0;
 
     @Column(name = "distance", nullable = false)
-    private int distance;
+    private int distance = 0;
+
+    public UserStatistic() {
+        
+    }
+
+    public UserStatistic(int userId) {
+        this.userId = userId;
+    }
 
     public int getUserId() {
         return userId;

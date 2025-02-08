@@ -3,6 +3,7 @@ package com.example.locaquest.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import lombok.RequiredArgsConstructor;
 
 import com.example.locaquest.component.JwtTokenManager;
 import com.example.locaquest.dto.LoginRequest;
@@ -12,26 +13,22 @@ import com.example.locaquest.exception.EmailNotExistsException;
 import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.exception.WrongPasswordException;
 import com.example.locaquest.model.User;
+import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.repogitory.UserRepository;
+import com.example.locaquest.repogitory.UserStatisticRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserStatisticRepository userStatisticRepository;
     private final EmailSender emailSender;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenManager jwtTokenManager;
     private final RedisService redisService;
-
-    public UserService(UserRepository userRepository, EmailSender emailSender, PasswordEncoder passwordEncoder, JwtTokenManager jwtTokenManager, RedisService redisService) {
-        this.userRepository = userRepository;
-        this.emailSender = emailSender;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenManager = jwtTokenManager;
-        this.redisService = redisService;
-    }
 
     public void preregisterUser(User user) {
         if (isEmailExists(user.getEmail())) {
@@ -55,6 +52,7 @@ public class UserService {
         redisService.deletePreregisterUser(email);
         redisService.saveAuthToken(token);
         User registerdUser = userRepository.save(user);
+        userStatisticRepository.save(new UserStatistic(registerdUser.getUserId()));
         return registerdUser;
     }
 

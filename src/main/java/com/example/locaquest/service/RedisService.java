@@ -15,10 +15,10 @@ public class RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    private final String preregisterKey = "preregisterKey";
-    private final String changePasswordKey = "changePasswordKey";
-    private final String authTokenKey = "authTokenKey";
-    private final String userAchievementKey = "userAchievementKey";
+    private final String preregisterKey = "preregister:";
+    private final String changePasswordKey = "changePassword:";
+    private final String authTokenKey = "authToken:";
+    private final String userAchievementKey = "userAchievement:";
 
     @Value("${jwt.expiration.auth}")
     private int jwtExpirationAuth;
