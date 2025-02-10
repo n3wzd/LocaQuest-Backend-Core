@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.locaquest.dto.MapRouteRequest;
-import com.example.locaquest.dto.PlaceRequest;
-import com.example.locaquest.dto.Place;
+import com.example.locaquest.dto.place.MapRouteRequest;
+import com.example.locaquest.dto.place.PlaceRequest;
+import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.service.PlaceService;
 import com.example.locaquest.service.TokenService;
 

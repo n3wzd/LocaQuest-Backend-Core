@@ -6,7 +6,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 
 import com.example.locaquest.component.JwtTokenManager;
-import com.example.locaquest.dto.LoginRequest;
+import com.example.locaquest.dto.user.LoginRequest;
 import com.example.locaquest.exception.AlreadyVerifiedException;
 import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.EmailNotExistsException;

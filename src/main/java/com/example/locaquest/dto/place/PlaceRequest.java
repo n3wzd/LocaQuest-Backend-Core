@@ -1,4 +1,4 @@
-package com.example.locaquest.dto;
+package com.example.locaquest.dto.place;
 
 import com.example.locaquest.dto.constant.PlaceSortCriteria;
 

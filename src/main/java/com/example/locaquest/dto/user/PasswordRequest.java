@@ -1,4 +1,4 @@
-package com.example.locaquest.dto;
+package com.example.locaquest.dto.user;
 
 import lombok.Getter;
 import lombok.Setter;

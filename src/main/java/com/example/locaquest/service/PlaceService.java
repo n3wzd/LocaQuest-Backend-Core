@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.locaquest.dto.MapRouteRequest;
-import com.example.locaquest.dto.Place;
-import com.example.locaquest.dto.PlaceRequest;
+import com.example.locaquest.dto.place.MapRouteRequest;
+import com.example.locaquest.dto.place.Place;
+import com.example.locaquest.dto.place.PlaceRequest;
 import com.example.locaquest.dto.constant.MapRouteProfile;
 import com.example.locaquest.dto.constant.PlaceSortCriteria;
 import com.example.locaquest.service.remote.MapApiRemoteControl;

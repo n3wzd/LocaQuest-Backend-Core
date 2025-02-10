@@ -1,16 +1,13 @@
 package com.example.locaquest.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.example.locaquest.component.StaticData;
-import com.example.locaquest.dto.AchievementData;
-import com.example.locaquest.exception.ServiceException;
+import com.example.locaquest.dto.status.AchievementData;
 import com.example.locaquest.model.Achievement;
 import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
@@ -29,7 +26,6 @@ public class UserStatusService {
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
     private final RedisService redisService;
-    private final StaticData staticData;
     private List<Achievement> achievementList;
 
     @PostConstruct
@@ -39,35 +35,6 @@ public class UserStatusService {
 
     public UserStatistic getUserStatistics(int userId) {
         return userStatisticRepository.findByUserId(userId);
-    }
-
-    public int getLevel(int exp) {
-        int a = staticData.getExpParamA();
-        int b = staticData.getExpParamB();
-        int c = staticData.getExpParamC() - exp;
-
-        int d = b * b - 4 * a * c;
-        if (d < 0) {
-            throw new ServiceException("Invalid EXP value");
-        }
-        return (int) ((-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a)) + 1;
-    }
-
-    public int getExpLimit(int level) {
-        int a = staticData.getExpParamA();
-        int b = staticData.getExpParamB();
-        int c = staticData.getExpParamC();
-        level--;
-        return (int) (a * Math.pow(level, 2)) + b * level + c;
-    }
-
-    public List<Integer> getExpLimitList() {
-        List<Integer> expLimitList = new ArrayList<>(Arrays.asList(0));
-        int maxLevel = staticData.getExpParamA();
-        for(int i = 1; i < maxLevel; i++) {
-            expLimitList.add(getExpLimit(i));
-        }
-        return expLimitList;
     }
 
     public List<AchievementData> getAllUserAchievements(int userId) {

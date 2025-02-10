@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.example.locaquest.dto.GooglePlaceSearchResult;
-import com.example.locaquest.dto.Place;
+import com.example.locaquest.dto.place.GooglePlaceSearchResult;
+import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.exception.ServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

@@ -18,19 +18,19 @@ import com.example.locaquest.exception.TokenException;
 public class JwtTokenManager {
 
     @Value("${jwt.key.login}")
-    private String jwtKeyLogin;  // base64Encoded
+    private String JWT_KEY_LOGIN;  // base64Encoded
 
     @Value("${jwt.key.auth}")
-    private String jwtKeyAuth;  // base64Encoded
+    private String JWT_KEY_AUTH;  // base64Encoded
 
     @Value("${jwt.expiration.access}")
-    private int jwtExpirationAccess;
+    private int JWT_EXPIRATION_ACCESS;
 
     /*@Value("${jwt.expiration.refresh}")
-    private int jwtExpirationRefresh;*/
+    private int JWT_EXPIRATION_REFRESH;*/
 
     @Value("${jwt.expiration.auth}")
-    private int jwtExpirationAuth;
+    private int JWT_EXPIRATION_AUTH;
 
     private JwtBuilder generateToken(String secretKey, int validityInMinutes) {
         Calendar calendar = Calendar.getInstance();
@@ -71,36 +71,36 @@ public class JwtTokenManager {
     }
 
     private boolean validateAuthToken(String token) {
-        return validateToken(token, jwtKeyAuth);
+        return validateToken(token, JWT_KEY_AUTH);
     }
 
     public boolean validateLoginToken(String token) {
-        return validateToken(token, jwtKeyLogin);
+        return validateToken(token, JWT_KEY_LOGIN);
     }
 
     public String generateAuthToken(String email) {
         Claims claims = Jwts.claims().setSubject(email);
-        JwtBuilder token = generateToken(jwtKeyAuth, jwtExpirationAuth);
+        JwtBuilder token = generateToken(JWT_KEY_AUTH, JWT_EXPIRATION_AUTH);
         return token.setClaims(claims).compact();
     }
 
     public String generateLoginToken(String userId, String name) {
         Claims claims = Jwts.claims().setSubject(userId);
         claims.put("name", name);
-        JwtBuilder token = generateToken(jwtKeyLogin, jwtExpirationAccess);
+        JwtBuilder token = generateToken(JWT_KEY_LOGIN, JWT_EXPIRATION_ACCESS);
         return token.setClaims(claims).compact();
     }
 
     public String getEmailByAuthToken(String token) {
-        return getSubject(token, jwtKeyAuth);
+        return getSubject(token, JWT_KEY_AUTH);
     }
 
     public String getUserIdByLoginToken(String token) {
-        return getSubject(token, jwtKeyLogin);
+        return getSubject(token, JWT_KEY_LOGIN);
     }
 
     public Claims getClaimsByLoginToken(String token) {
-        return getClaims(token, jwtKeyLogin);
+        return getClaims(token, JWT_KEY_LOGIN);
     }
 
     public void validateAuthTokenWithException(String token) {

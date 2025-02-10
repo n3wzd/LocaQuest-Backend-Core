@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.locaquest.dto.Place;
+import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.dto.constant.MapRouteProfile;
 import com.example.locaquest.service.api.GooglePlaceAPI;
 import com.example.locaquest.service.api.OpenStreetMapAPI;

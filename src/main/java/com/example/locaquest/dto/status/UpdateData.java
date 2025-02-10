@@ -1,4 +1,4 @@
-package com.example.locaquest.dto;
+package com.example.locaquest.dto.status;
 
 import java.util.List;
 

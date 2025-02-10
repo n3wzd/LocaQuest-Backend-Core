@@ -1,4 +1,4 @@
-package com.example.locaquest.dto;
+package com.example.locaquest.dto.place;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import com.example.locaquest.dto.OSMResult;
-import com.example.locaquest.dto.Place;
+import com.example.locaquest.dto.place.OSMResult;
+import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.dto.constant.MapRouteProfile;
 import com.example.locaquest.exception.ServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;

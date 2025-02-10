@@ -41,7 +41,7 @@ public class SecurityConfig {
             "/users/update-password/check-verified",
             "/users/update-password",
             "/update/",
-            "/activity/get-login-token-key"
+            "/activity/init"
         );
 
         http

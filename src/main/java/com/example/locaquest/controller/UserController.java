@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.locaquest.dto.EmailRequest;
-import com.example.locaquest.dto.LoginRequest;
-import com.example.locaquest.dto.PasswordRequest;
+import com.example.locaquest.dto.user.EmailRequest;
+import com.example.locaquest.dto.user.LoginRequest;
+import com.example.locaquest.dto.user.PasswordRequest;
 import com.example.locaquest.dto.group.CreateGroup;
 import com.example.locaquest.dto.group.PasswordGroup;
 import com.example.locaquest.dto.group.UpdateGroup;
