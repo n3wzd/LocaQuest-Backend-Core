@@ -9,26 +9,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-
-import jakarta.transaction.Transactional;
 
 import com.example.locaquest.model.UserStatistic;
-import com.example.locaquest.dto.AchievementData;
+import com.example.locaquest.dto.status.AchievementData;
 import com.example.locaquest.service.UserStatusService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-// @Transactional
 public class UserStatusControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-
     @Autowired
     private UserStatusService userStatusService;
 
-    final private ObjectMapper objectMapper = new ObjectMapper();
     static final private Logger logger = LoggerFactory.getLogger(UserStatusControllerTest.class);
 
     @ParameterizedTest
@@ -46,9 +37,9 @@ public class UserStatusControllerTest {
     })
     void testScan(int userId, int exp, int steps, int dist) throws Exception {
         UserStatistic userStatistic = new UserStatistic();
-        userStatistic.setTotalExperience(exp);
-        userStatistic.setTotalSteps(steps);
-        userStatistic.setTotalDistance(dist);
+        userStatistic.setExp(exp);
+        userStatistic.setSteps(steps);
+        userStatistic.setDistance(dist);
 
         userStatusService.updateUserAchievementByUserStatistic(userId, userStatistic);
         logger.info("testScan: {}", userId);

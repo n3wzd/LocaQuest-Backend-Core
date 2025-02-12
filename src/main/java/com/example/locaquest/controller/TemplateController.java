@@ -1,7 +1,5 @@
 package com.example.locaquest.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,35 +7,39 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import com.example.locaquest.constant.Route;
 import com.example.locaquest.model.User;
 import com.example.locaquest.service.UserService;
+import com.example.locaquest.util.LogUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/template")
+@RequestMapping(Route.TEMPLATE)
 public class TemplateController {
 
     private final UserService userService;
     private final SpringTemplateEngine templateEngine;
-    static final private Logger logger = LoggerFactory.getLogger(TemplateController.class);
+    private final String filePath = "controller.TemplateController";
 
     public TemplateController(UserService userService, SpringTemplateEngine templateEngine) {
         this.userService = userService;
         this.templateEngine = templateEngine;
     }
 
-    @GetMapping("/register/accept")
-    public String registerUser(@RequestParam String token) {
+    @GetMapping(Route.TEMPLATE_REGISTER_ACCREPT)
+    public String registerUser(@RequestParam String token, HttpServletRequest request) {
         userService.checkAuthTokenUsedWithException(token);
         User registedUser = userService.registerUser(token);
-        logger.info("registerUser successfully: email={}", registedUser.getEmail());
+        LogUtil.info(String.format("successfully: email=%s", registedUser.getEmail()), filePath, Route.TEMPLATE_REGISTER_ACCREPT, request);
         return templateEngine.process("VerifyAccept", new Context());
     }
 
-    @GetMapping("/update-password/accept")
-    public String updatePasswordVerifyAuthEmail(@RequestParam String token) {
+    @GetMapping(Route.TEMPLATE_UPDATE_PASSWORD_ACCREPT)
+    public String updatePasswordVerifyAuthEmail(@RequestParam String token, HttpServletRequest request) {
         userService.checkAuthTokenUsedWithException(token);
         String email = userService.updatePasswordVerifyAuthEmail(token);
-        logger.info("updatePasswordVerifyAuthEmail successfully: email={}", email);
+        LogUtil.info(String.format("successfully: email=%s", email), filePath, Route.TEMPLATE_UPDATE_PASSWORD_ACCREPT, request);
         return templateEngine.process("VerifyAccept", new Context());
     }
 }

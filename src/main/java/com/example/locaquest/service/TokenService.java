@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TokenService {
-    public int getUserId() {
+	public int getUserId() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return Integer.parseInt(userDetails.getUsername());
     }

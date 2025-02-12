@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 
-import com.example.locaquest.component.JwtTokenManager;
+import com.example.locaquest.component.EmailComponent;
+import com.example.locaquest.component.TokenComponent;
+import com.example.locaquest.component.RedisComponent;
 import com.example.locaquest.dto.user.LoginRequest;
 import com.example.locaquest.exception.AlreadyVerifiedException;
 import com.example.locaquest.exception.EmailExistsException;
@@ -25,10 +27,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserStatisticRepository userStatisticRepository;
-    private final EmailSender emailSender;
+    private final EmailComponent emailComponent;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenManager jwtTokenManager;
-    private final RedisService redisService;
+    private final TokenComponent tokenComponent;
+    private final RedisComponent redisComponent;
 
     public void preregisterUser(User user) {
         if (isEmailExists(user.getEmail())) {
@@ -36,7 +38,7 @@ public class UserService {
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        redisService.savePreregisterUser(user);
+        redisComponent.savePreregisterUser(user);
         sendAuthMail(user.getEmail(), "/template/register/accept");
     }
 
@@ -45,12 +47,12 @@ public class UserService {
         if (isEmailExists(email)) {
             throw new EmailExistsException(email);
         }
-        User user = redisService.getPreregisterUser(email);
+        User user = redisComponent.getPreregisterUser(email);
         if (user == null) {
             throw new ServiceException("data not exists in Redis: " + email);
         }
-        redisService.deletePreregisterUser(email);
-        redisService.saveAuthToken(token);
+        redisComponent.deletePreregisterUser(email);
+        redisComponent.saveAuthToken(token);
         User registerdUser = userRepository.save(user);
         userStatisticRepository.save(new UserStatistic(registerdUser.getUserId()));
         return registerdUser;
@@ -61,7 +63,7 @@ public class UserService {
         if(user == null) {
             throw new EmailNotExistsException(email);
         }
-        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
+        return tokenComponent.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
     }
 
     public String login(LoginRequest loginRequest) {
@@ -72,7 +74,7 @@ public class UserService {
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new WrongPasswordException(loginRequest.getEmail());
         }
-        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
+        return tokenComponent.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
     }
 
     public void updatePasswordSendAuthEmail(String email) {
@@ -84,13 +86,13 @@ public class UserService {
 
     public String updatePasswordVerifyAuthEmail(String token) {
         String email = getEmailByAuthMailToken(token);
-        redisService.saveChangePasswordEmail(email);
-        redisService.saveAuthToken(token);
+        redisComponent.saveChangePasswordEmail(email);
+        redisComponent.saveAuthToken(token);
         return email;
     }
 
     public boolean updatePasswordCheckVerified(String email) {
-        String value = redisService.getChangePasswordEmail(email);
+        String value = redisComponent.getChangePasswordEmail(email);
         return value != null;
     }
 
@@ -100,17 +102,16 @@ public class UserService {
         if(userRepository.updatePassword(encodedPassword, email) == 0) {
             throw new ServiceException("Failed to update password: " + email);
         }
-        redisService.deleteChangePasswordEmail(email);
+        redisComponent.deleteChangePasswordEmail(email);
     }
 
     public String updateUser(int userId, User newUser) {
         User user = userRepository.findByUserId(userId);
-
         String encodedPassword = passwordEncoder.encode(newUser.getPassword());
         user.setPassword(encodedPassword);
         user.setName(newUser.getName());
         userRepository.save(user);
-        return jwtTokenManager.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
+        return tokenComponent.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
     }
 
     @Transactional
@@ -125,7 +126,7 @@ public class UserService {
     }
 
     public void checkAuthTokenUsedWithException(String token) {
-        String data = redisService.getAuthToken(token);
+        String data = redisComponent.getAuthToken(token);
         if(data != null) {
             throw new AlreadyVerifiedException(token);
         }
@@ -136,9 +137,9 @@ public class UserService {
     }
 
     private void sendAuthMail(String email, String serverUrl) {
-        String token = jwtTokenManager.generateAuthToken(email);
+        String token = tokenComponent.generateAuthToken(email);
         String tokenUrl = createServerUrlForAuthMail(serverUrl, token);
-        emailSender.sendAuthMail(email, tokenUrl);
+        emailComponent.sendAuthMail(email, tokenUrl);
     }
 
     private String createServerUrlForAuthMail(String url, String token) {
@@ -149,7 +150,7 @@ public class UserService {
     }
 
     private String getEmailByAuthMailToken(String token) {
-        jwtTokenManager.validateAuthTokenWithException(token);
-        return jwtTokenManager.getEmailByAuthToken(token);
+    	tokenComponent.validateAuthTokenWithException(token);
+        return tokenComponent.getEmailByAuthToken(token);
     }
 }

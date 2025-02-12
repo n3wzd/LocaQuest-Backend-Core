@@ -1,4 +1,4 @@
-package com.example.locaquest.component;
+package com.example.locaquest.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,28 +8,27 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.Claims;
+import com.example.locaquest.component.TokenComponent;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class AuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenManager jwtTokenManager;
+    private final TokenComponent tokenComponent;
 
-    public JwtAuthenticationFilter(JwtTokenManager jwtTokenManager) {
-        this.jwtTokenManager = jwtTokenManager;
+    public AuthenticationFilter(TokenComponent tokenComponent) {
+        this.tokenComponent = tokenComponent;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = extractTokenFromRequest(request);
-        if (token != null && jwtTokenManager.validateLoginToken(token)) {
+        if (token != null && tokenComponent.validateLoginToken(token)) {
             Authentication authentication = getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -45,8 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication getAuthentication(String token) {
-        Claims claims = jwtTokenManager.getClaimsByLoginToken(token);
-        UserDetails userDetails = new User(claims.getSubject(), "", new ArrayList<>());
+        UserDetails userDetails = new User(tokenComponent.getUserIdByLoginToken(token), "", new ArrayList<>());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

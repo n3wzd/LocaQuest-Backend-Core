@@ -2,35 +2,36 @@ package com.example.locaquest.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.locaquest.constant.Route;
 import com.example.locaquest.dto.status.AchievementData;
 import com.example.locaquest.dto.status.UserStatusResponse;
 import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.service.TokenService;
 import com.example.locaquest.service.UserStatusService;
+import com.example.locaquest.util.LogUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/user-status")
+@RequestMapping(Route.USER_STATUS)
 public class UserStatusController {
 
     private final TokenService tokenService;
     private final UserStatusService userStatusService;
-    static final private Logger logger = LoggerFactory.getLogger(UserStatusController.class);
+    private final String filePath = "controller.UserStatusController";
 
     public UserStatusController(TokenService tokenService, UserStatusService userStatusService) {
         this.tokenService = tokenService;
         this.userStatusService = userStatusService;
     }
 
-    @PostMapping("/")
-    public ResponseEntity<?> getAll() {
+    @PostMapping(Route.USER_STATUS_ALL)
+    public ResponseEntity<?> getAll(HttpServletRequest request) {
         int userId = tokenService.getUserId();
         UserStatistic userStatstic = userStatusService.getUserStatistics(userId);
         List<AchievementData> achievementList = userStatusService.getAllUserAchievements(userId);
@@ -42,31 +43,23 @@ public class UserStatusController {
         result.setSteps(userStatstic.getSteps());
         result.setDistance(userStatstic.getDistance());
         result.setAchievementList(achievementList);
-        logger.info("getAll successful: userId={}", userId);
+        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ALL, request);
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/statistics")
-    public ResponseEntity<?> getStatistics() {
+    @PostMapping(Route.USER_STATUS_STATISTIC)
+    public ResponseEntity<?> getStatistics(HttpServletRequest request) {
         int userId = tokenService.getUserId();
         UserStatistic result = userStatusService.getUserStatistics(userId);
-        logger.info("getStatistics successful: userId={}", userId);
+        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_STATISTIC, request);
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/achievements")
-    public ResponseEntity<?> getAchievements() {
+    @PostMapping(Route.USER_STATUS_ACHIEVEMENT)
+    public ResponseEntity<?> getAchievements(HttpServletRequest request) {
         int userId = tokenService.getUserId();
         List<AchievementData> result = userStatusService.getAllUserAchievements(userId);
-        logger.info("getAchievements successful: userId={}", userId);
+        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ACHIEVEMENT, request);
         return ResponseEntity.ok(result);
-    }
-
-    @PostMapping("/achievements/scan-statistic")
-    public ResponseEntity<?> scanStatistic(@RequestBody UserStatistic userStatistic) {
-        int userId = tokenService.getUserId();
-        userStatusService.updateUserAchievementByUserStatistic(userId, userStatistic);
-        logger.info("scanStatistic successful: userId={}", userId);
-        return ResponseEntity.ok("");
     }
 }

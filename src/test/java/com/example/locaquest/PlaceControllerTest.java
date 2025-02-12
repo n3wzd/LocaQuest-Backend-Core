@@ -12,8 +12,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.locaquest.dto.MapRouteRequest;
-import com.example.locaquest.dto.PlaceRequest;
+import com.example.locaquest.dto.place.MapRouteRequest;
+import com.example.locaquest.dto.place.PlaceRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -26,7 +26,7 @@ public class PlaceControllerTest {
     static final private Logger logger = LoggerFactory.getLogger(PlaceControllerTest.class);
     private static final String TEST_TOKEN = "";
 
-    /*@ParameterizedTest
+    @ParameterizedTest
     @CsvSource({
         TEST_TOKEN + ", 37, 126, fuel, 2000, 200", 
     })
@@ -66,5 +66,5 @@ public class PlaceControllerTest {
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         logger.info("testRoute: {}", result.getResponse().getContentAsString());
-    }*/
+    }
 }

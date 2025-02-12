@@ -2,44 +2,46 @@ package com.example.locaquest.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.locaquest.constant.Route;
 import com.example.locaquest.dto.place.MapRouteRequest;
 import com.example.locaquest.dto.place.PlaceRequest;
 import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.service.PlaceService;
 import com.example.locaquest.service.TokenService;
+import com.example.locaquest.util.LogUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("/places")
+@RequestMapping(Route.PLACE)
 public class PlaceController {
 
     private final TokenService tokenService;
     private final PlaceService placeService;
-    static final private Logger logger = LoggerFactory.getLogger(PlaceController.class);
+    private final String filePath = "controller.PlaceController";
 
     public PlaceController(TokenService tokenService, PlaceService placeService) {
         this.tokenService = tokenService;
         this.placeService = placeService;
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest) {
+    @PostMapping(Route.PLACE_SEARCH)
+    public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest, HttpServletRequest request) {
         List<Place> result = placeService.search(placeRequest);
-        logger.info("searchPlaces successful: userId={}", tokenService.getUserId());
+        LogUtil.info(String.format("successfully: userId=%s", tokenService.getUserId()), filePath, Route.PLACE_SEARCH, request);
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/route")
-    public ResponseEntity<?> routeDestination(@RequestBody MapRouteRequest mapRouteRequest) {
+    @PostMapping(Route.PLACE_ROUTE)
+    public ResponseEntity<?> routeDestination(@RequestBody MapRouteRequest mapRouteRequest, HttpServletRequest request) {
         String result = placeService.route(mapRouteRequest);
-        logger.info("routeDestination successful: userId={}", tokenService.getUserId());
+        LogUtil.info(String.format("successfully: userId=%s", tokenService.getUserId()), filePath, Route.PLACE_ROUTE, request);
         return ResponseEntity.ok(result);
     }
 }

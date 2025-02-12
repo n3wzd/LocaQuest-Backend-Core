@@ -1,7 +1,5 @@
-package com.example.locaquest.service;
+package com.example.locaquest.service.kafka;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
@@ -9,18 +7,18 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 
 import com.example.locaquest.dto.status.UserParamGain;
 import com.example.locaquest.repogitory.UserStatisticRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.locaquest.util.LogUtil;
 
 @Service
 @RequiredArgsConstructor
-public class KafkaService {
+public class GainUserParam {
     private final UserStatisticRepository userStatisticRepository;
     private final static ObjectMapper objectMapper = new ObjectMapper();
-    private final static Logger logger = LoggerFactory.getLogger(KafkaService.class);
 
     @KafkaListener(topics = "${kafka.topic.user-param-gain}", groupId = "${kafka.topic.user-param-gain}")
     @Transactional
@@ -32,12 +30,12 @@ public class KafkaService {
             int steps = expGain.getSteps();
             int distance = expGain.getDistance();
             if(userStatisticRepository.gainParam(userId, exp, steps, distance) == 1) {
-                logger.info("GainUserParam successful: userId={}, exp={}, steps={}, distance={}", userId, exp, steps, distance);
+            	LogUtil.info(String.format("successfully: userId=%s, exp=%d, steps=%d, distance=%d", userId, exp, steps, distance), "service.kafka.GainUserParam", "consumeGainUserParam");
             } else {
-                logger.warn("GainUserParam DB failed. unknown userId: {}", userId);
+            	LogUtil.warn(String.format("DB failed. unknown userId: %s", userId), "service.kafka.GainUserParam", "consumeGainUserParam");
             }
         } catch(JsonProcessingException e) {
-            logger.warn("GainUserParam json parsing failed: {}", e.toString());
+        	LogUtil.warn(String.format("GainUserParam json parsing failed: %s", e.toString()), "service.kafka.GainUserParam", "consumeGainUserParam");
         } finally {
             acknowledgment.acknowledge();
         }

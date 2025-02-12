@@ -1,7 +1,9 @@
 package com.example.locaquest.exception;
 
 public class AlreadyVerifiedException extends RuntimeException {
-    public AlreadyVerifiedException(String message) {
+	private static final long serialVersionUID = 1L;
+
+	public AlreadyVerifiedException(String message) {
         super(message);
     }
 

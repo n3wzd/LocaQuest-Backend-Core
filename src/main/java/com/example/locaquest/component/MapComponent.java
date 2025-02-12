@@ -1,22 +1,22 @@
-package com.example.locaquest.service.remote;
+package com.example.locaquest.component;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.dto.constant.MapRouteProfile;
-import com.example.locaquest.service.api.GooglePlaceAPI;
-import com.example.locaquest.service.api.OpenStreetMapAPI;
+import com.example.locaquest.external.GooglePlaceAPI;
+import com.example.locaquest.external.OpenStreetMapAPI;
 
-@Service
-public class MapApiRemoteControl {
+@Component
+public class MapComponent {
 
     private final boolean useGoogleAPI = false;
     private final GooglePlaceAPI googlePlaceApi;
     private final OpenStreetMapAPI openStreetMapAPI;
 
-    public MapApiRemoteControl(GooglePlaceAPI googlePlaceApi, OpenStreetMapAPI openStreetMapAPI) {
+    public MapComponent(GooglePlaceAPI googlePlaceApi, OpenStreetMapAPI openStreetMapAPI) {
         this.googlePlaceApi = googlePlaceApi;
         this.openStreetMapAPI = openStreetMapAPI;
     }

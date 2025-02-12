@@ -11,17 +11,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.locaquest.component.JwtAuthenticationFilter;
-import com.example.locaquest.component.JwtTokenManager;
+import com.example.locaquest.component.TokenComponent;
+import com.example.locaquest.util.AuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtTokenManager jwtTokenManager;
+    private final TokenComponent tokenComponent;
 
-    public SecurityConfig(JwtTokenManager jwtTokenManager) {
-        this.jwtTokenManager = jwtTokenManager;
+    public SecurityConfig(TokenComponent tokenComponent) {
+        this.tokenComponent = tokenComponent;
     }
 
     @Bean
@@ -46,7 +46,7 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
-            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenManager), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new AuthenticationFilter(tokenComponent), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                     .requestMatchers(publicUrls.toArray(String[]::new)).permitAll()

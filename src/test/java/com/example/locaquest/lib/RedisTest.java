@@ -1,4 +1,4 @@
-package com.example.locaquest;
+package com.example.locaquest.lib;
 
 import java.util.concurrent.TimeUnit;
 
@@ -10,24 +10,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.example.locaquest.service.RedisService;
-
 @SpringBootTest
 public class RedisTest {
 
     @Autowired
-    private RedisService redisService;
+    private Redis redis;
 
-    static final private Logger logger = LoggerFactory.getLogger(EmailSenderTest.class);
+    static final private Logger logger = LoggerFactory.getLogger(RedisTest.class);
 
-    /*@ParameterizedTest
+    @ParameterizedTest
     @CsvSource({
         "key1, ABC, ABC, true", 
         "key2, ACD, ABD, false", 
     })
     void testRedis(String dataKey, String in, String out, String result) {
-        redisService.save(dataKey, in, 10, TimeUnit.SECONDS);
-        String data = redisService.get(dataKey);
+    	redis.save(dataKey, in, 10, TimeUnit.SECONDS);
+        String data = redis.get(dataKey, String.class);
 
         logger.info("get is: {}", data);
         if(data.equals(out)) {
@@ -35,5 +33,5 @@ public class RedisTest {
         } else {
             assertEquals("false", result);
         }
-    }*/
+    }
 }

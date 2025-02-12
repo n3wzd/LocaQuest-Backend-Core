@@ -8,8 +8,9 @@ import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class UserAchievementKey implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-    @Column(name = "user_id")
+	@Column(name = "user_id")
     private int userId;
 
     @Column(name = "achv_id")

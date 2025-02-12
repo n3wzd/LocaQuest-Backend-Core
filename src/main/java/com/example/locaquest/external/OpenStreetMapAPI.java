@@ -1,4 +1,4 @@
-package com.example.locaquest.service.api;
+package com.example.locaquest.external;
 
 import java.util.ArrayList;
 import java.util.List;

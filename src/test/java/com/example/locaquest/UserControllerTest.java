@@ -17,17 +17,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import jakarta.transaction.Transactional;
-
-import com.example.locaquest.dto.LoginRequest;
-import com.example.locaquest.dto.EmailRequest;
-import com.example.locaquest.dto.PasswordRequest;
+import com.example.locaquest.dto.user.LoginRequest;
+import com.example.locaquest.dto.user.EmailRequest;
+import com.example.locaquest.dto.user.PasswordRequest;
 import com.example.locaquest.model.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-// @Transactional
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest {
     @Autowired
@@ -41,7 +38,7 @@ public class UserControllerTest {
     private static final String TEST_TOKEN1 = "";
     private static final String TEST_TOKEN2 = "";
 
-    /*@ParameterizedTest
+    @ParameterizedTest
     @Order(1)
     @CsvSource({
         "alice@example.com, Password@123, Alice Smith, 010-1234-5678, 202", 
@@ -201,7 +198,7 @@ public class UserControllerTest {
     })
     void testDeleteUser(String token, String password, int expectedStatus) throws Exception {
         PasswordRequest passwordRequest = new PasswordRequest();
-        passwordRequest.setEmail(password);
+        passwordRequest.setPassword(password);
 
         String json = objectMapper.writeValueAsString(passwordRequest);
         MvcResult result = mockMvc.perform(post("/users/delete")
@@ -211,5 +208,5 @@ public class UserControllerTest {
                 .andExpect(status().is(expectedStatus))
                 .andReturn();
         logger.info("testDeleteUser: {}", result.getResponse().getContentAsString());
-    }*/
+    }
 }

@@ -1,10 +1,8 @@
-package com.example.locaquest.service.api;
+package com.example.locaquest.external;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -22,7 +20,6 @@ public class GooglePlaceAPI {
     private static final String API_BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
     private final RestClient restClient;
     final private ObjectMapper objectMapper = new ObjectMapper();
-    static final private Logger logger = LoggerFactory.getLogger(GooglePlaceAPI.class);
 
     @Value("${google.key}")
     private String apiKey;

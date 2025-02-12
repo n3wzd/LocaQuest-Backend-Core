@@ -1,4 +1,4 @@
-package com.example.locaquest.service.api;
+package com.example.locaquest.external;
 
 import java.util.*;
 
@@ -46,7 +46,7 @@ public class OSMAmenityMapper {
 
     private static void putData(String[] words, String keyword) {
         for (String word : words) {
-            amenityMap.computeIfAbsent(word, k -> new ArrayList<>()).add(keyword);
+            amenityMap.computeIfAbsent(word, _ -> new ArrayList<>()).add(keyword);
         }
     }
 

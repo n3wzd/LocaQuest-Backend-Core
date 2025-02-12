@@ -15,6 +15,7 @@ import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.repogitory.AchievementRepository;
 import com.example.locaquest.repogitory.UserAchievementRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
+import com.example.locaquest.component.RedisComponent;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class UserStatusService {
     private final UserStatisticRepository userStatisticRepository;
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
-    private final RedisService redisService;
+    private final RedisComponent redisComponent;
     private List<Achievement> achievementList;
 
     @PostConstruct
@@ -85,7 +86,7 @@ public class UserStatusService {
     }
 
     private Map<String, String> getUserAchievementMap(int userId) {
-        Map<String, String> userAchievementMap = redisService.getUserAchievement(userId);
+        Map<String, String> userAchievementMap = redisComponent.getUserAchievement(userId);
         if(userAchievementMap == null) {
             userAchievementMap = updateUserAchievementCache(userId);
         }
@@ -100,7 +101,7 @@ public class UserStatusService {
             String date = userAchievement.getAchievedAt().toString();
             userAchievementMap.put(String.valueOf(achvId), date);
         }
-        redisService.saveUserAchievement(userId, userAchievementMap);
+        redisComponent.saveUserAchievement(userId, userAchievementMap);
         return userAchievementMap;
     }
 

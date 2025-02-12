@@ -10,14 +10,14 @@ import com.example.locaquest.dto.place.Place;
 import com.example.locaquest.dto.place.PlaceRequest;
 import com.example.locaquest.dto.constant.MapRouteProfile;
 import com.example.locaquest.dto.constant.PlaceSortCriteria;
-import com.example.locaquest.service.remote.MapApiRemoteControl;
+import com.example.locaquest.component.MapComponent;
 
 @Service
 public class PlaceService {
-    private final MapApiRemoteControl mapApiRemoteControl;
+    private final MapComponent mapComponent;
 
-    public PlaceService(MapApiRemoteControl mapApiRemoteControl) {
-        this.mapApiRemoteControl = mapApiRemoteControl;
+    public PlaceService(MapComponent mapComponent) {
+        this.mapComponent = mapComponent;
     }
 
     public List<Place> search(PlaceRequest placeRequest) {
@@ -25,7 +25,7 @@ public class PlaceService {
         double longitude = placeRequest.getLongitude();
         String query = placeRequest.getQuery();
         int radius = placeRequest.getRadius();
-        List<Place> places = mapApiRemoteControl.searchNearbyPlaces(latitude, longitude, radius, query);
+        List<Place> places = mapComponent.searchNearbyPlaces(latitude, longitude, radius, query);
         places = sortPlaces(places, placeRequest.getSortCriteria());
         return places;
     }
@@ -46,6 +46,6 @@ public class PlaceService {
         double destLat = mapRouteRequest.getDestLatitude();
         double destLng = mapRouteRequest.getDestLongitude();
         MapRouteProfile profile = mapRouteRequest.getMapRouteProfile();
-        return mapApiRemoteControl.route(depLat, depLng, destLat, destLng, profile);
+        return mapComponent.route(depLat, depLng, destLat, destLng, profile);
     }
 }
