@@ -10,4 +10,11 @@ public class EmailProvider {
     private String providerName;
     private String smtpHost;
     private int smtpPort;
+    
+    public EmailProvider(String domain, String providerName, String smtpHost, int smtpPort) {
+        this.domain = domain;
+        this.providerName = providerName;
+        this.smtpHost = smtpHost;
+        this.smtpPort = smtpPort;
+    }
 }

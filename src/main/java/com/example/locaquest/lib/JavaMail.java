@@ -12,24 +12,21 @@ import org.springframework.stereotype.Service;
 
 import com.example.locaquest.exception.JavaMailException;
 import com.example.locaquest.dto.email.EmailProvider;
-import com.example.locaquest.component.EmailProviderProperties;
+import com.example.locaquest.constant.EmailConfig;
 
 import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class JavaMail {
 
-    private final EmailProviderProperties emailProviderProperties;
     private final Map<String, JavaMailSenderImpl> mailSenderMap = new HashMap<>();
 
-    public JavaMail(EmailProviderProperties emailProviderProperties,
+    public JavaMail(
             @Value("${spring.mail.username}") String mailUserName,
             @Value("${spring.mail.password}") String mailPassword,
             @Value("${spring.mail.properties.mail.smtp.auth}") String mailAuth,
             @Value("${spring.mail.properties.mail.smtp.starttls.enable}") String mailStarttlsEnable) {
-        this.emailProviderProperties = emailProviderProperties;
-
-        List<EmailProvider> mailProviderList = this.emailProviderProperties.getEmailProviders();
+        List<EmailProvider> mailProviderList = EmailConfig.EMAIL_PROVIDERS;
         for (EmailProvider mailProvider : mailProviderList) {
             JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
             mailSender.setHost(mailProvider.getSmtpHost());
@@ -46,7 +43,7 @@ public class JavaMail {
 
     public void send(String email, String subject, String htmlContents) {
         String domain = getDomain(email);
-        EmailProvider emailProvider = emailProviderProperties.findEmailProviderByDomain(domain);
+        EmailProvider emailProvider = EmailConfig.findEmailProviderByDomain(domain);
         if (emailProvider == null) {
             throw new JavaMailException("Email provider not found: " + domain);
         }

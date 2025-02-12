@@ -40,31 +40,13 @@ spring:
       ack-mode: manual
 logging:
   level:
-    org.springframework: OFF
+    org.springframework: DEBUG
     org.springframework.web: OFF
-    org.springframework.kafka: warn
+    org.springframework.kafka: OFF
     org.hibernate: OFF
     org.apache: OFF
     org.apache.catalina: OFF
     com.zaxxer: OFF
-email:
-  providers:
-    - domain: gmail.com
-      providerName: Gmail
-      smtpHost: smtp.gmail.com
-      smtpPort: 587
-    - domain: outlook.com
-      providerName: Outlook
-      smtpHost: smtp-mail.outlook.com
-      smtpPort: 587
-    - domain: yahoo.com
-      providerName: Yahoo
-      smtpHost: smtp.mail.yahoo.com
-      smtpPort: 587
-    - domain: naver.com
-      providerName: Naver
-      smtpHost: smtp.naver.com
-      smtpPort: 587
 jwt:
   key:
     login: ${SPRING_JWT_KEY_LOGIN}

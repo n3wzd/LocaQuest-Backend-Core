@@ -10,7 +10,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class Jwt {
-    public String generateToken(String key, int validityInMinutes, String subject, Map<String, String> params) {
+    public static String generateToken(String key, int validityInMinutes, String subject, Map<String, String> params) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, validityInMinutes);
         Date validity = calendar.getTime();
@@ -29,7 +29,7 @@ public class Jwt {
                 .compact();
     }
     
-    public boolean verify(String token, String key) {
+    public static boolean verify(String token, String key) {
         try {
             Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             return true;
@@ -38,7 +38,7 @@ public class Jwt {
         }
     }
   
-    public String getSubject(String token, String key) {
+    public static String getSubject(String token, String key) {
         try {
             return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
         } catch (JwtException | IllegalArgumentException e) {
@@ -46,7 +46,7 @@ public class Jwt {
         }
     }
 
-    public Claims getClaims(String token, String key) {
+    public static Claims getClaims(String token, String key) {
         try {
             return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
         } catch (JwtException | IllegalArgumentException e) {

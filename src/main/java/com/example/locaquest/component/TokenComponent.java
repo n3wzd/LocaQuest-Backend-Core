@@ -13,8 +13,6 @@ import com.example.locaquest.exception.TokenException;
 @Component
 @RequiredArgsConstructor
 public class TokenComponent {
-
-	private Jwt jwt;
 	
     @Value("${jwt.key.login}")
     private String JWT_KEY_LOGIN;
@@ -32,27 +30,27 @@ public class TokenComponent {
     private int JWT_EXPIRATION_AUTH;
 
     private boolean validateAuthToken(String token) {
-        return jwt.verify(token, JWT_KEY_AUTH);
+        return Jwt.verify(token, JWT_KEY_AUTH);
     }
 
     public boolean validateLoginToken(String token) {
-        return jwt.verify(token, JWT_KEY_LOGIN);
+        return Jwt.verify(token, JWT_KEY_LOGIN);
     }
 
     public String generateAuthToken(String email) {
-        return jwt.generateToken(JWT_KEY_AUTH, JWT_EXPIRATION_AUTH, email, Map.of( ));
+        return Jwt.generateToken(JWT_KEY_AUTH, JWT_EXPIRATION_AUTH, email, Map.of( ));
     }
     
     public String generateLoginToken(String userId, String name) {
-    	return jwt.generateToken(JWT_KEY_LOGIN, JWT_EXPIRATION_ACCESS, userId, Map.of( "name", name));
+    	return Jwt.generateToken(JWT_KEY_LOGIN, JWT_EXPIRATION_ACCESS, userId, Map.of( "name", name));
     }
 
     public String getEmailByAuthToken(String token) {
-        return jwt.getSubject(token, JWT_KEY_AUTH);
+        return Jwt.getSubject(token, JWT_KEY_AUTH);
     }
 
     public String getUserIdByLoginToken(String token) {
-        return jwt.getSubject(token, JWT_KEY_LOGIN);
+        return Jwt.getSubject(token, JWT_KEY_LOGIN);
     }
 
     public void validateAuthTokenWithException(String token) {

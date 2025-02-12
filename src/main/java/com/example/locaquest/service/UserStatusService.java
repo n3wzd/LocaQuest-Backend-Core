@@ -15,7 +15,6 @@ import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.repogitory.AchievementRepository;
 import com.example.locaquest.repogitory.UserAchievementRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
-import com.example.locaquest.component.RedisComponent;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ public class UserStatusService {
     private final UserStatisticRepository userStatisticRepository;
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
-    private final RedisComponent redisComponent;
     private List<Achievement> achievementList;
 
     @PostConstruct
@@ -62,38 +60,13 @@ public class UserStatusService {
         return userAchvList;
     }
 
-    public void updateUserAchievementByUserStatistic(int userId, UserStatistic userData) {
-        for(Achievement achv: achievementList) {
-            int achvId = achv.getAchvId();
-            if(checkAchievementCondition(achvId, userData)) {
-                achieveAchievement(userId, achvId);
-            }
-        }
-    }
-
     public void achieveAchievement(int userId, int achvId) {
-        if(!hasAchievement(userId, achvId)) {
-            UserAchievement userAchv = new UserAchievement();
-            userAchv.setId(new UserAchievementKey(userId, achvId));
-            userAchievementRepository.save(userAchv);
-            updateUserAchievementCache(userId);
-        }
-    }
-
-    private boolean hasAchievement(int userId, int achvId) {
-        Map<String, String> userAchvMap = getUserAchievementMap(userId);
-        return userAchvMap.get(String.valueOf(achvId)) != null;
+    	UserAchievement userAchv = new UserAchievement();
+        userAchv.setId(new UserAchievementKey(userId, achvId));
+        userAchievementRepository.save(userAchv);
     }
 
     private Map<String, String> getUserAchievementMap(int userId) {
-        Map<String, String> userAchievementMap = redisComponent.getUserAchievement(userId);
-        if(userAchievementMap == null) {
-            userAchievementMap = updateUserAchievementCache(userId);
-        }
-        return userAchievementMap;
-    }
-
-    private Map<String, String> updateUserAchievementCache(int userId) {
         List<UserAchievement> userAchievementDatas = userAchievementRepository.findByIdUserId(userId);
         Map<String, String> userAchievementMap = new HashMap<>();
         for (UserAchievement userAchievement : userAchievementDatas) {
@@ -101,12 +74,7 @@ public class UserStatusService {
             String date = userAchievement.getAchievedAt().toString();
             userAchievementMap.put(String.valueOf(achvId), date);
         }
-        redisComponent.saveUserAchievement(userId, userAchievementMap);
         return userAchievementMap;
-    }
-
-    private boolean checkAchievementCondition(int achvId, UserStatistic userData) {
-        return getAchievementProgress(achvId, userData) == 100;
     }
 
     private int getAchievementProgress(int achvId, UserStatistic userData) {

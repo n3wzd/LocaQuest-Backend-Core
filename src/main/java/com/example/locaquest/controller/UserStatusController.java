@@ -3,11 +3,15 @@ package com.example.locaquest.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.locaquest.constant.Route;
+import com.example.locaquest.dto.status.AchieveRequest;
 import com.example.locaquest.dto.status.AchievementData;
 import com.example.locaquest.dto.status.UserStatusResponse;
 import com.example.locaquest.model.UserStatistic;
@@ -47,19 +51,26 @@ public class UserStatusController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping(Route.USER_STATUS_STATISTIC)
-    public ResponseEntity<?> getStatistics(HttpServletRequest request) {
-        int userId = tokenService.getUserId();
+    @GetMapping(Route.USER_STATUS_STATISTIC)
+    public ResponseEntity<?> getStatistics(@PathVariable int userId, HttpServletRequest request) {
         UserStatistic result = userStatusService.getUserStatistics(userId);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_STATISTIC, request);
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping(Route.USER_STATUS_ACHIEVEMENT)
-    public ResponseEntity<?> getAchievements(HttpServletRequest request) {
-        int userId = tokenService.getUserId();
+    @GetMapping(Route.USER_STATUS_ACHIEVEMENT)
+    public ResponseEntity<?> getAchievements(@PathVariable int userId, HttpServletRequest request) {
         List<AchievementData> result = userStatusService.getAllUserAchievements(userId);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ACHIEVEMENT, request);
         return ResponseEntity.ok(result);
+    }
+    
+    @PostMapping(Route.USER_STATUS_ACHIEVE)
+    public ResponseEntity<?> achieve(@RequestBody AchieveRequest achieveRequest, HttpServletRequest request) {
+        int userId = achieveRequest.getUserId();
+        int achvId = achieveRequest.getAchvId();
+        userStatusService.achieveAchievement(userId, achvId);
+        LogUtil.info(String.format("successfully: userId=%s, achvId=%s", userId, achvId), filePath, Route.USER_STATUS_ACHIEVE, request);
+        return ResponseEntity.ok("");
     }
 }

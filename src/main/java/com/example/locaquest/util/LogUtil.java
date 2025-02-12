@@ -43,7 +43,6 @@ public class LogUtil {
                 .ipAddress(request.getRemoteAddr())
                 .method(request.getMethod())
                 .url(request.getRequestURI())
-                .userId((String) request.getAttribute("userId"))
                 .build() : null)
             .location(LogObject.LocationInfo.builder()
                 .file(file)

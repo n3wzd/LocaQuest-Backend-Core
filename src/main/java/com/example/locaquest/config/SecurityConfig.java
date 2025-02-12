@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.locaquest.component.TokenComponent;
+import com.example.locaquest.constant.Route;
 import com.example.locaquest.util.AuthenticationFilter;
 
 @Configuration
@@ -32,16 +33,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         List<String> publicUrls = List.of(
-            "/users/register/send-auth-mail", 
-            "/template/register/accept", 
-            "/users/register/check-verified",
-            "/users/login", 
-            "/users/update-password/send-auth-email",
-            "/template/update-password/accept",
-            "/users/update-password/check-verified",
-            "/users/update-password",
-            "/update/",
-            "/activity/init"
+        	Route.USER + Route.USER_REGISTER_MAIL, 
+            Route.USER + Route.USER_REGISTER_VERIFIED,
+            Route.USER + Route.USER_LOGIN, 
+            Route.TEMPLATE + Route.TEMPLATE_UPDATE_PASSWORD_ACCREPT,
+            Route.TEMPLATE + Route.TEMPLATE_REGISTER_ACCREPT,
+            Route.USER + Route.USER_UPDATE_PASSWORD,
+            Route.USER + Route.USER_UPDATE_PASSWORD_MAIL,
+            Route.USER + Route.USER_UPDATE_PASSWORD_VERIFIED, 
+            Route.ACTIVITY + Route.ACTIVITY_INIT,
+            Route.USER_STATUS + Route.USER_STATUS_ACHIEVE,
+            Route.USER_STATUS + Route.USER_STATUS_STATISTIC,
+            Route.USER_STATUS + Route.USER_STATUS_ACHIEVEMENT
         );
 
         http
