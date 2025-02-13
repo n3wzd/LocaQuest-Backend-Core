@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.locaquest.dto.status.AchievementData;
+import com.example.locaquest.dto.status.UserAchievementData;
 import com.example.locaquest.service.UserStatusService;
 
 @SpringBootTest
@@ -26,7 +26,7 @@ public class UserStatusControllerTest {
         "13", 
     })
     void testFindAll(int userId) throws Exception {
-        List<AchievementData> res = userStatusService.getAchievedUserAchievements(userId);
+        List<UserAchievementData> res = userStatusService.getUserAchievements(userId);
         logger.info("testFindAll: {}, {}", userId, res.toString());
     }
 }

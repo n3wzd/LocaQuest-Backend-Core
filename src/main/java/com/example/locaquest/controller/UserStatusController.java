@@ -12,55 +12,45 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.locaquest.constant.Route;
 import com.example.locaquest.dto.status.AchieveRequest;
-import com.example.locaquest.dto.status.AchievementData;
+import com.example.locaquest.dto.status.UserAchievementData;
 import com.example.locaquest.dto.status.UserStatusResponse;
 import com.example.locaquest.model.UserStatistic;
-import com.example.locaquest.service.TokenService;
 import com.example.locaquest.service.UserStatusService;
 import com.example.locaquest.util.LogUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Route.USER_STATUS)
+@RequiredArgsConstructor
 public class UserStatusController {
 
-    private final TokenService tokenService;
     private final UserStatusService userStatusService;
     private final String filePath = "controller.UserStatusController";
 
-    public UserStatusController(TokenService tokenService, UserStatusService userStatusService) {
-        this.tokenService = tokenService;
-        this.userStatusService = userStatusService;
-    }
-
-    @PostMapping(Route.USER_STATUS_ALL)
-    public ResponseEntity<?> getAll(HttpServletRequest request) {
-        int userId = tokenService.getUserId();
+    @GetMapping(Route.USER_STATUS_ALL + "/{userId}")
+    public ResponseEntity<?> getAll(@PathVariable int userId, HttpServletRequest request) {
         UserStatistic userStatstic = userStatusService.getUserStatistics(userId);
-        List<AchievementData> achievementList = userStatusService.getAllUserAchievements(userId);
-        int exp = userStatstic.getExp();
-
+        List<UserAchievementData> achievementList = userStatusService.getUserAchievements(userId);
+        
         UserStatusResponse result = new UserStatusResponse();
-        result.setExp(exp);
-        result.setLevel(1);
-        result.setSteps(userStatstic.getSteps());
-        result.setDistance(userStatstic.getDistance());
+        result.setUserStatistic(userStatstic);
         result.setAchievementList(achievementList);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ALL, request);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(Route.USER_STATUS_STATISTIC)
+    @GetMapping(Route.USER_STATUS_STATISTIC + "/{userId}")
     public ResponseEntity<?> getStatistics(@PathVariable int userId, HttpServletRequest request) {
         UserStatistic result = userStatusService.getUserStatistics(userId);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_STATISTIC, request);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping(Route.USER_STATUS_ACHIEVEMENT)
+    @GetMapping(Route.USER_STATUS_ACHIEVEMENT + "/{userId}")
     public ResponseEntity<?> getAchievements(@PathVariable int userId, HttpServletRequest request) {
-        List<AchievementData> result = userStatusService.getAllUserAchievements(userId);
+    	List<UserAchievementData> result = userStatusService.getUserAchievements(userId);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ACHIEVEMENT, request);
         return ResponseEntity.ok(result);
     }

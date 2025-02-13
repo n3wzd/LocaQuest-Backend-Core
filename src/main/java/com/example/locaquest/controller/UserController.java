@@ -21,21 +21,18 @@ import com.example.locaquest.service.UserService;
 import com.example.locaquest.util.LogUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 import com.example.locaquest.service.TokenService;
 
 @RestController
 @RequestMapping(Route.USER)
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final TokenService tokenService;
     private final String filePath = "controller.UserController";
-
-    public UserController(UserService userService, TokenService tokenService) {
-        this.userService = userService;
-        this.tokenService = tokenService;
-    }
 
     @PostMapping(Route.USER_REGISTER_MAIL)
     public ResponseEntity<?> registerSendAuthMail(@Validated(CreateGroup.class) @RequestBody User user, BindingResult bindingResult, HttpServletRequest request) {

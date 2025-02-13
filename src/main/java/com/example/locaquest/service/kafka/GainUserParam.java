@@ -24,11 +24,12 @@ public class GainUserParam {
     @Transactional
     public void consumeGainUserParam(String message, Acknowledgment acknowledgment) {
         try {
-            UserParamGain expGain = objectMapper.readValue(message, UserParamGain.class);
-            int userId = expGain.getUserId();
-            int exp = expGain.getExp();
-            int steps = expGain.getSteps();
-            int distance = expGain.getDistance();
+            UserParamGain paramGain = objectMapper.readValue(message, UserParamGain.class);
+            int userId = paramGain.getUserId();
+            int exp = paramGain.getExp();
+            int steps = paramGain.getSteps();
+            int distance = paramGain.getDistance();
+            System.out.println(paramGain.toString());
             if(userStatisticRepository.gainParam(userId, exp, steps, distance) == 1) {
             	LogUtil.info(String.format("successfully: userId=%s, exp=%d, steps=%d, distance=%d", userId, exp, steps, distance), "service.kafka.GainUserParam", "consumeGainUserParam");
             } else {

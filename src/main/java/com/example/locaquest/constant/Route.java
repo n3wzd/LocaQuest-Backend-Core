@@ -24,7 +24,10 @@ public class Route {
     
     public static final String USER_STATUS = "/user-status";
     public static final String USER_STATUS_ALL = "/all";
-    public static final String USER_STATUS_STATISTIC = "/statistics/${userId}";
-    public static final String USER_STATUS_ACHIEVEMENT = "/achievements/${userId}";
+    public static final String USER_STATUS_STATISTIC = "/statistics";
+    public static final String USER_STATUS_ACHIEVEMENT = "/achievements";
     public static final String USER_STATUS_ACHIEVE = "/achieve";
+    
+    public static final String ACHIEVEMENT = "/achievement";
+    public static final String ACHIEVEMENT_ALL = "/achievement/all";
 }

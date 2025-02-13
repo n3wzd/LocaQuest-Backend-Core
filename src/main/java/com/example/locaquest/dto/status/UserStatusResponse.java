@@ -2,19 +2,14 @@ package com.example.locaquest.dto.status;
 
 import java.util.List;
 
+import com.example.locaquest.model.UserStatistic;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class UserStatusResponse {
-    private int level;
-    private int exp;
-    private int steps;
-    private int distance;  
-    private List<AchievementData> achievementList;
-
-    public void setAchievementList(List<AchievementData> achievementList) {
-        this.achievementList = achievementList;
-    }
+    private UserStatistic userStatistic;
+    private List<UserAchievementData> achievementList;
 }

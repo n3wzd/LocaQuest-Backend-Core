@@ -13,19 +13,16 @@ import com.example.locaquest.service.UserService;
 import com.example.locaquest.util.LogUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Route.TEMPLATE)
+@RequiredArgsConstructor
 public class TemplateController {
 
     private final UserService userService;
     private final SpringTemplateEngine templateEngine;
     private final String filePath = "controller.TemplateController";
-
-    public TemplateController(UserService userService, SpringTemplateEngine templateEngine) {
-        this.userService = userService;
-        this.templateEngine = templateEngine;
-    }
 
     @GetMapping(Route.TEMPLATE_REGISTER_ACCREPT)
     public String registerUser(@RequestParam String token, HttpServletRequest request) {

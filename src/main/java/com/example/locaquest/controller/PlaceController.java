@@ -17,19 +17,16 @@ import com.example.locaquest.service.TokenService;
 import com.example.locaquest.util.LogUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Route.PLACE)
+@RequiredArgsConstructor
 public class PlaceController {
 
     private final TokenService tokenService;
     private final PlaceService placeService;
     private final String filePath = "controller.PlaceController";
-
-    public PlaceController(TokenService tokenService, PlaceService placeService) {
-        this.tokenService = tokenService;
-        this.placeService = placeService;
-    }
 
     @PostMapping(Route.PLACE_SEARCH)
     public ResponseEntity<?> searchPlaces(@RequestBody PlaceRequest placeRequest, HttpServletRequest request) {

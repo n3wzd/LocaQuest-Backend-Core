@@ -40,7 +40,7 @@ spring:
       ack-mode: manual
 logging:
   level:
-    org.springframework: DEBUG
+    org.springframework: OFF
     org.springframework.web: OFF
     org.springframework.kafka: OFF
     org.hibernate: OFF
