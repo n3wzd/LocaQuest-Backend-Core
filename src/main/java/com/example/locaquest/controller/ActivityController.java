@@ -32,7 +32,7 @@ public class ActivityController {
     @PostMapping(Route.ACTIVITY_INIT)
     public ResponseEntity<?> init(@RequestBody InitRequest initRequest, HttpServletRequest request) {
         InitResponse response = new InitResponse();
-        response.setLoginTokenKey(activityService.getLoginTokenKey(initRequest.getRsaPublicKey()));
+        response.setLoginTokenKey(activityService.getEncryptedLoginTokenKey(initRequest.getRsaPublicKey()));
         response.setKafkaTopicUserParamGain(KAFKA_TOPIC_USER_PARAM_GAIN);
         response.setAchievementList(userStatusService.getAchievementList());
         LogUtil.info(String.format("successfully"), filePath, Route.ACTIVITY_INIT, request);

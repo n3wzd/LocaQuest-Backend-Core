@@ -39,7 +39,7 @@ public class UserStatusController {
         result.setAchievementList(achievementList);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ALL, request);
         return ResponseEntity.ok(result);
-    }
+    } 
 
     @GetMapping(Route.USER_STATUS_STATISTIC + "/{userId}")
     public ResponseEntity<?> getStatistics(@PathVariable int userId, HttpServletRequest request) {

@@ -9,6 +9,7 @@ import com.example.locaquest.controller.UserController;
 import com.example.locaquest.controller.PlaceController;
 import com.example.locaquest.controller.UserStatusController;
 import com.example.locaquest.controller.ActivityController;
+import com.example.locaquest.controller.ClientController;
 import com.example.locaquest.exception.JavaMailException;
 import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.EmailNotExistsException;
@@ -20,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.example.locaquest.exception.TokenException;
 
-@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class, UserStatusController.class, ActivityController.class })
+@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class, UserStatusController.class, ActivityController.class, ClientController.class })
 public class HTTPControllerAdvice {
 
     final private String filePath = "config.HTTPControllerAdvice";

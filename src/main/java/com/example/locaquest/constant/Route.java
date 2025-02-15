@@ -4,6 +4,9 @@ public class Route {
     public static final String ACTIVITY = "/activity";
     public static final String ACTIVITY_INIT = "/init";
     
+    public static final String CLIENT = "/client";
+    public static final String CLIENT_INIT = "/init";
+    
     public static final String PLACE = "/places";
     public static final String PLACE_SEARCH = "/search";
     public static final String PLACE_ROUTE = "/route";

@@ -51,7 +51,7 @@ public class UserController {
         LogUtil.info(String.format("successfully: email=%s", email), filePath, Route.USER_REGISTER_VERIFIED, request);
         return ResponseEntity.ok(token);
     }
-
+    
     @PostMapping(Route.USER_LOGIN)
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         String token = userService.login(loginRequest);

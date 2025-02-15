@@ -18,6 +18,7 @@ import com.example.locaquest.model.User;
 import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.repogitory.UserRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
+import com.example.locaquest.util.Crypto;
 
 import jakarta.transaction.Transactional;
 
@@ -36,7 +37,7 @@ public class UserService {
         if (isEmailExists(user.getEmail())) {
             throw new EmailExistsException(user.getEmail());
         }
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        String encodedPassword = passwordEncoder.encode(decryptRSAPassword(user.getPassword()));
         user.setPassword(encodedPassword);
         redisComponent.savePreregisterUser(user);
         sendAuthMail(user.getEmail(), "/template/register/accept");
@@ -71,7 +72,7 @@ public class UserService {
         if(user == null) {
             throw new EmailNotExistsException(loginRequest.getEmail());
         }
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(decryptRSAPassword(loginRequest.getPassword()), user.getPassword())) {
             throw new WrongPasswordException(loginRequest.getEmail());
         }
         return tokenComponent.generateLoginToken(String.valueOf(user.getUserId()), user.getName());
@@ -98,7 +99,7 @@ public class UserService {
 
     @Transactional
     public void updatePasswordByEmail(String password, String email) {
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = passwordEncoder.encode(decryptRSAPassword(password));
         if(userRepository.updatePassword(encodedPassword, email) == 0) {
             throw new ServiceException("Failed to update password: " + email);
         }
@@ -107,7 +108,7 @@ public class UserService {
 
     public String updateUser(int userId, User newUser) {
         User user = userRepository.findByUserId(userId);
-        String encodedPassword = passwordEncoder.encode(newUser.getPassword());
+        String encodedPassword = passwordEncoder.encode(decryptRSAPassword(newUser.getPassword()));
         user.setPassword(encodedPassword);
         user.setName(newUser.getName());
         userRepository.save(user);
@@ -117,7 +118,7 @@ public class UserService {
     @Transactional
     public void deleteUser(int userId, String password) {
         User user = userRepository.findByUserId(userId);
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(decryptRSAPassword(password), user.getPassword())) {
             throw new WrongPasswordException(user.getEmail());
         }
         if (userRepository.deleteByUserId(userId) == 0) {
@@ -152,5 +153,13 @@ public class UserService {
     private String getEmailByAuthMailToken(String token) {
     	tokenComponent.validateAuthTokenWithException(token);
         return tokenComponent.getEmailByAuthToken(token);
+    }
+    
+    private String decryptRSAPassword(String encryptedPassword) {
+    	try {
+			return Crypto.decryptRSA(encryptedPassword);
+		} catch (Exception e) {
+			throw new ServiceException("RSM Error:" + e.toString());
+		}
     }
 }

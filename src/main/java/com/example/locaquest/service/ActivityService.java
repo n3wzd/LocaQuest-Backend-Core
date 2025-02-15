@@ -12,7 +12,7 @@ public class ActivityService {
     @Value("${jwt.key.login}")
     private String jwtKeyLogin;
 
-    public String getLoginTokenKey(String publicKey) {
+    public String getEncryptedLoginTokenKey(String publicKey) {
         try {
             return Crypto.encryptRSA(jwtKeyLogin, Crypto.stringToPublicKey(publicKey));
         } catch(Exception e) {
