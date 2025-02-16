@@ -59,7 +59,8 @@ public class UserStatusController {
     public ResponseEntity<?> achieve(@RequestBody AchieveRequest achieveRequest, HttpServletRequest request) {
         int userId = achieveRequest.getUserId();
         int achvId = achieveRequest.getAchvId();
-        userStatusService.achieveAchievement(userId, achvId);
+        String achievedAt = achieveRequest.getAchievedAt();
+        userStatusService.achieveAchievement(userId, achvId, achievedAt);
         LogUtil.info(String.format("successfully: userId=%s, achvId=%s", userId, achvId), filePath, Route.USER_STATUS_ACHIEVE, request);
         return ResponseEntity.ok("");
     }

@@ -47,9 +47,10 @@ public class UserStatusService {
         return res;
     }
 
-    public void achieveAchievement(int userId, int achvId) {
+    public void achieveAchievement(int userId, int achvId, String achievedAt) {
     	UserAchievement userAchv = new UserAchievement();
         userAchv.setId(new UserAchievementKey(userId, achvId));
+        userAchv.setAchievedAt(achievedAt);
         userAchievementRepository.save(userAchv);
     }
 }

@@ -18,7 +18,6 @@ import com.example.locaquest.model.User;
 import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.repogitory.UserRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
-import com.example.locaquest.util.Crypto;
 
 import jakarta.transaction.Transactional;
 
@@ -156,10 +155,11 @@ public class UserService {
     }
     
     private String decryptRSAPassword(String encryptedPassword) {
-    	try {
+    	return encryptedPassword;
+    	/*try {
 			return Crypto.decryptRSA(encryptedPassword);
 		} catch (Exception e) {
 			throw new ServiceException("RSM Error:" + e.toString());
-		}
+		}*/
     }
 }

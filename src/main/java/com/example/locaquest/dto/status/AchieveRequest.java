@@ -8,4 +8,5 @@ import lombok.Setter;
 public class AchieveRequest {
     private int achvId;
     private int userId;
+    private String achievedAt;
 }
