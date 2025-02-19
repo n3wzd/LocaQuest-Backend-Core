@@ -1,17 +1,23 @@
 package com.example.locaquest.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "user_statistics")
 public class UserStatistic {
 
-    @Id
-    @Column(name = "user_id", nullable = false, unique = true, updatable = false)
-    private int userId;
+    @EmbeddedId
+    private UserStatisticKey id;
 
     @Column(name = "exp", nullable = false)
     private int exp = 0;
@@ -22,43 +28,14 @@ public class UserStatistic {
     @Column(name = "distance", nullable = false)
     private int distance = 0;
 
-    public UserStatistic() {
-        
-    }
+    public UserStatistic() {}
 
-    public UserStatistic(int userId) {
-        this.userId = userId;
+    public UserStatistic(int userId, String statDate) {
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        this.id = new UserStatisticKey(userId, LocalDate.parse(statDate, formatter));
     }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public int getExp() {
-        return exp;
-    }
-
-    public int getSteps() {
-        return steps;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public void setExp(int exp) {
-        this.exp = exp;
-    }
-
-    public void setSteps(int steps) {
-        this.steps = steps;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
+    
+    public UserStatistic(int userId, LocalDate statDate) {
+        this.id = new UserStatisticKey(userId, statDate);
     }
 }

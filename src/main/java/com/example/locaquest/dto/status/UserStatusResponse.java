@@ -10,6 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserStatusResponse {
-    private UserStatistic userStatistic;
+    private List<UserStatistic> userStatisticList;
     private List<UserAchievementData> achievementList;
 }

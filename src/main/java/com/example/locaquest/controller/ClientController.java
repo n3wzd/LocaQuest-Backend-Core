@@ -28,9 +28,7 @@ public class ClientController {
     @GetMapping(Route.CLIENT_INIT)
     public ResponseEntity<?> init(HttpServletRequest request) {
         InitResponse response = new InitResponse();
-        System.out.println("1");
         response.setRsaPublicKey(clientService.getRSAPublicKey());
-        System.out.println(clientService.getRSAPublicKey());
         LogUtil.info(String.format("successfully"), filePath, Route.CLIENT_INIT, request);
         return ResponseEntity.ok(response);
     }

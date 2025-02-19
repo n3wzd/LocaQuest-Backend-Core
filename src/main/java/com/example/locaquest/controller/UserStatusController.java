@@ -31,11 +31,11 @@ public class UserStatusController {
 
     @GetMapping(Route.USER_STATUS_ALL + "/{userId}")
     public ResponseEntity<?> getAll(@PathVariable int userId, HttpServletRequest request) {
-        UserStatistic userStatstic = userStatusService.getUserStatistics(userId);
+    	List<UserStatistic> userStatstic = userStatusService.getUserStatistics(userId);
         List<UserAchievementData> achievementList = userStatusService.getUserAchievements(userId);
         
         UserStatusResponse result = new UserStatusResponse();
-        result.setUserStatistic(userStatstic);
+        result.setUserStatisticList(userStatstic);
         result.setAchievementList(achievementList);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ALL, request);
         return ResponseEntity.ok(result);
@@ -43,7 +43,7 @@ public class UserStatusController {
 
     @GetMapping(Route.USER_STATUS_STATISTIC + "/{userId}")
     public ResponseEntity<?> getStatistics(@PathVariable int userId, HttpServletRequest request) {
-        UserStatistic result = userStatusService.getUserStatistics(userId);
+        List<UserStatistic> result = userStatusService.getUserStatistics(userId);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_STATISTIC, request);
         return ResponseEntity.ok(result);
     }

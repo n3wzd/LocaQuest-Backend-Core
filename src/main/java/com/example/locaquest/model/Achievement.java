@@ -4,7 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "achievements")
 public class Achievement {
@@ -18,16 +22,4 @@ public class Achievement {
 
     @Column(name = "achv_desc", nullable = false, updatable = false)
     private String desc;
-
-    public int getAchvId() {
-        return achvId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
 }

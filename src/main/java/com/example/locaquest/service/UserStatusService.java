@@ -34,8 +34,8 @@ public class UserStatusService {
         return achievementList;
     }
     
-    public UserStatistic getUserStatistics(int userId) {
-        return userStatisticRepository.findByUserId(userId);
+    public List<UserStatistic> getUserStatistics(int userId) {
+        return userStatisticRepository.findByIdUserId(userId);
     }
 
     public List<UserAchievementData> getUserAchievements(int userId) {
