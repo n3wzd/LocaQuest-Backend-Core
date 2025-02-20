@@ -1,7 +1,6 @@
 package com.example.locaquest.model;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -29,13 +28,12 @@ public class UserStatistic {
     private int distance = 0;
 
     public UserStatistic() {}
-
-    public UserStatistic(int userId, String statDate) {
-    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        this.id = new UserStatisticKey(userId, LocalDate.parse(statDate, formatter));
-    }
     
     public UserStatistic(int userId, LocalDate statDate) {
+        this.id = new UserStatisticKey(userId, statDate);
+    }
+    
+    public UserStatistic(int userId, String statDate) {
         this.id = new UserStatisticKey(userId, statDate);
     }
 }

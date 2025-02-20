@@ -3,8 +3,6 @@ package com.example.locaquest.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.locaquest.constant.Route;
 import com.example.locaquest.dto.status.AchieveRequest;
 import com.example.locaquest.dto.status.UserAchievementData;
-import com.example.locaquest.dto.status.UserStatusResponse;
+import com.example.locaquest.dto.status.UserStatusStartRequest;
+import com.example.locaquest.dto.status.UserStatusStartResponse;
 import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.service.UserStatusService;
 import com.example.locaquest.util.LogUtil;
@@ -29,31 +28,22 @@ public class UserStatusController {
     private final UserStatusService userStatusService;
     private final String filePath = "controller.UserStatusController";
 
-    @GetMapping(Route.USER_STATUS_ALL + "/{userId}")
-    public ResponseEntity<?> getAll(@PathVariable int userId, HttpServletRequest request) {
+    @PostMapping(Route.USER_STATUS_START)
+    public ResponseEntity<?> getAll(@RequestBody UserStatusStartRequest attRequest, HttpServletRequest request) {
+    	int userId = attRequest.getUserId();
+    	String date = attRequest.getDate();
+    	
+    	boolean isAttend = userStatusService.updateAttend(userId, date);
     	List<UserStatistic> userStatstic = userStatusService.getUserStatistics(userId);
-        List<UserAchievementData> achievementList = userStatusService.getUserAchievements(userId);
+        List<UserAchievementData> userAchievementList = userStatusService.getUserAchievements(userId);
         
-        UserStatusResponse result = new UserStatusResponse();
+        UserStatusStartResponse result = new UserStatusStartResponse();
         result.setUserStatisticList(userStatstic);
-        result.setAchievementList(achievementList);
-        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ALL, request);
+        result.setUserAchievementList(userAchievementList);
+        result.setAttend(isAttend);
+        LogUtil.info(String.format("successfully: userId=%s, date=%s", userId, date), filePath, Route.USER_STATUS_START, request);
         return ResponseEntity.ok(result);
     } 
-
-    @GetMapping(Route.USER_STATUS_STATISTIC + "/{userId}")
-    public ResponseEntity<?> getStatistics(@PathVariable int userId, HttpServletRequest request) {
-        List<UserStatistic> result = userStatusService.getUserStatistics(userId);
-        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_STATISTIC, request);
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping(Route.USER_STATUS_ACHIEVEMENT + "/{userId}")
-    public ResponseEntity<?> getAchievements(@PathVariable int userId, HttpServletRequest request) {
-    	List<UserAchievementData> result = userStatusService.getUserAchievements(userId);
-        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_STATUS_ACHIEVEMENT, request);
-        return ResponseEntity.ok(result);
-    }
     
     @PostMapping(Route.USER_STATUS_ACHIEVE)
     public ResponseEntity<?> achieve(@RequestBody AchieveRequest achieveRequest, HttpServletRequest request) {

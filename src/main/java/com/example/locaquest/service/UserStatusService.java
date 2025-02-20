@@ -10,6 +10,7 @@ import com.example.locaquest.model.Achievement;
 import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
 import com.example.locaquest.model.UserStatistic;
+import com.example.locaquest.model.UserStatisticKey;
 import com.example.locaquest.repogitory.AchievementRepository;
 import com.example.locaquest.repogitory.UserAchievementRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
@@ -45,6 +46,14 @@ public class UserStatusService {
     		res.add(new UserAchievementData(data.getId().getAchvId(), data.getAchievedAt().toString()));
     	}
         return res;
+    }
+    
+    public boolean updateAttend(int userId, String statDate) {
+    	if(!userStatisticRepository.existsById(new UserStatisticKey(userId, statDate))) {
+    		userStatisticRepository.save(new UserStatistic(userId, statDate));
+    		return true;
+    	}
+    	return false;
     }
 
     public void achieveAchievement(int userId, int achvId, String achievedAt) {

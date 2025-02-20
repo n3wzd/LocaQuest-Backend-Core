@@ -9,7 +9,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserStatusResponse {
+public class UserStatusStartResponse {
     private List<UserStatistic> userStatisticList;
-    private List<UserAchievementData> achievementList;
+    private List<UserAchievementData> userAchievementList;
+    private boolean isAttend;
 }

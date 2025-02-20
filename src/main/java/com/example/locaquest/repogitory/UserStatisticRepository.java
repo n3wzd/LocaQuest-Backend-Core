@@ -10,9 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.locaquest.model.UserStatistic;
+import com.example.locaquest.model.UserStatisticKey;
 
 @Repository
 public interface UserStatisticRepository extends JpaRepository<UserStatistic, String> {
+	boolean existsById(UserStatisticKey id);
 	List<UserStatistic> findByIdUserId(int userId);
 
     @Modifying

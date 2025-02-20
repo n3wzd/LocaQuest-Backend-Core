@@ -26,9 +26,8 @@ public class Route {
     public static final String TEMPLATE_UPDATE_PASSWORD_ACCREPT = "/update-password/accept";
     
     public static final String USER_STATUS = "/user-status";
-    public static final String USER_STATUS_ALL = "/all";
-    public static final String USER_STATUS_STATISTIC = "/statistics";
-    public static final String USER_STATUS_ACHIEVEMENT = "/achievements";
+    public static final String USER_STATUS_START = "/start";
+    public static final String USER_STATUS_ATTEND = "/attend";
     public static final String USER_STATUS_ACHIEVE = "/achieve";
     
     public static final String ACHIEVEMENT = "/achievement";

@@ -42,11 +42,10 @@ public class SecurityConfig {
             Route.USER + Route.USER_UPDATE_PASSWORD_MAIL,
             Route.USER + Route.USER_UPDATE_PASSWORD_VERIFIED, 
             Route.ACTIVITY + Route.ACTIVITY_INIT,
-            Route.CLIENT + Route.CLIENT_INIT + "/**",
-            Route.USER_STATUS + Route.USER_STATUS_ALL + "/**",
-            Route.USER_STATUS + Route.USER_STATUS_ACHIEVE + "/**",
-            Route.USER_STATUS + Route.USER_STATUS_STATISTIC + "/**",
-            Route.USER_STATUS + Route.USER_STATUS_ACHIEVEMENT + "/**"
+            Route.CLIENT + Route.CLIENT_INIT,
+            Route.USER_STATUS + Route.USER_STATUS_START,
+            Route.USER_STATUS + Route.USER_STATUS_ATTEND,
+            Route.USER_STATUS + Route.USER_STATUS_ACHIEVE
         );
 
         http
