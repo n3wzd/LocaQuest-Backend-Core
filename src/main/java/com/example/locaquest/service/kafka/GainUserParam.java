@@ -1,8 +1,5 @@
 package com.example.locaquest.service.kafka;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
@@ -28,18 +25,16 @@ public class GainUserParam {
     @KafkaListener(topics = "${kafka.topic.user-param-gain}", groupId = "${kafka.topic.user-param-gain}")
     @Transactional
     public void consumeGainUserParam(String message, Acknowledgment acknowledgment) {
-    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             UserParamGain paramGain = objectMapper.readValue(message, UserParamGain.class);
             int userId = paramGain.getUserId();
-            String dateStr = paramGain.getDate();
+            String date = paramGain.getDate();
             int exp = paramGain.getExp();
             int steps = paramGain.getSteps();
             int distance = paramGain.getDistance();
-            LocalDate date = LocalDate.parse(dateStr, formatter);
-            userStatusService.updateAttend(userId, dateStr);
+            userStatusService.updateAttend(userId, date);
             if(userStatisticRepository.gainParam(userId, date, exp, steps, distance) == 1) {
-            	LogUtil.info(String.format("successfully: userId=%s, date=%s, exp=%d, steps=%d, distance=%d", userId, dateStr, exp, steps, distance), "service.kafka.GainUserParam", "consumeGainUserParam");
+            	LogUtil.info(String.format("successfully: userId=%s, date=%s, exp=%d, steps=%d, distance=%d", userId, date, exp, steps, distance), "service.kafka.GainUserParam", "consumeGainUserParam");
             } else {
             	LogUtil.warn(String.format("DB failed. unknown userId: %s", userId), "service.kafka.GainUserParam", "consumeGainUserParam");
             }

@@ -1,8 +1,6 @@
 package com.example.locaquest.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -20,19 +18,13 @@ public class UserStatisticKey implements Serializable {
     private int userId;
 
 	@Column(name = "stat_date")
-    private LocalDate statDate;
+    private String statDate;
 
     public UserStatisticKey() {}
 
-    public UserStatisticKey(int userId, LocalDate statDate) {
+    public UserStatisticKey(int userId, String statDate) {
         this.userId = userId;
         this.statDate = statDate;
-    }
-    
-    public UserStatisticKey(int userId, String statDate) {
-    	this.userId = userId;
-    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        this.statDate = LocalDate.parse(statDate, formatter);
     }
 
     @Override

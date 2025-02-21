@@ -44,7 +44,6 @@ public class SecurityConfig {
             Route.ACTIVITY + Route.ACTIVITY_INIT,
             Route.CLIENT + Route.CLIENT_INIT,
             Route.USER_STATUS + Route.USER_STATUS_START,
-            Route.USER_STATUS + Route.USER_STATUS_ATTEND,
             Route.USER_STATUS + Route.USER_STATUS_ACHIEVE
         );
 

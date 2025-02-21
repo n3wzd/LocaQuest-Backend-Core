@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.locaquest.constant.Route;
 import com.example.locaquest.dto.status.AchieveRequest;
 import com.example.locaquest.dto.status.UserAchievementData;
+import com.example.locaquest.dto.status.UserStatisticData;
 import com.example.locaquest.dto.status.UserStatusStartRequest;
 import com.example.locaquest.dto.status.UserStatusStartResponse;
-import com.example.locaquest.model.UserStatistic;
 import com.example.locaquest.service.UserStatusService;
 import com.example.locaquest.util.LogUtil;
 
@@ -34,7 +34,7 @@ public class UserStatusController {
     	String date = attRequest.getDate();
     	
     	boolean isAttend = userStatusService.updateAttend(userId, date);
-    	List<UserStatistic> userStatstic = userStatusService.getUserStatistics(userId);
+    	List<UserStatisticData> userStatstic = userStatusService.getUserStatistics(userId);
         List<UserAchievementData> userAchievementList = userStatusService.getUserAchievements(userId);
         
         UserStatusStartResponse result = new UserStatusStartResponse();

@@ -1,6 +1,5 @@
 package com.example.locaquest.repogitory;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +18,5 @@ public interface UserStatisticRepository extends JpaRepository<UserStatistic, St
 
     @Modifying
     @Query("UPDATE UserStatistic u SET u.exp = u.exp + :exp, u.steps = u.steps + :steps, u.distance = u.distance + :distance WHERE u.id.userId = :userId and u.id.statDate = :statDate")
-    int gainParam(@Param("userId") int userId, @Param("statDate") LocalDate statDate, @Param("exp") int exp, @Param("steps") int steps, @Param("distance") int distance);
+    int gainParam(@Param("userId") int userId, @Param("statDate") String statDate, @Param("exp") int exp, @Param("steps") int steps, @Param("distance") int distance);
 }

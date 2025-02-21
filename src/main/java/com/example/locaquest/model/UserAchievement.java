@@ -1,6 +1,6 @@
 package com.example.locaquest.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.Column;
@@ -16,7 +16,7 @@ public class UserAchievement {
     private UserAchievementKey id;
 
     @Column(name = "achieved_at", nullable = false, updatable = false)
-    private LocalDateTime achievedAt;
+    private ZonedDateTime achievedAt;
 
     public void setId(UserAchievementKey id) {
         this.id = id;
@@ -26,12 +26,15 @@ public class UserAchievement {
         return id;
     }
     
+    public void setAchievedAt(ZonedDateTime achievedAt) {
+        this.achievedAt = achievedAt;
+    }
+    
     public void setAchievedAt(String achievedAt) {
-    	DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        this.achievedAt = LocalDateTime.parse(achievedAt, formatter);
+        this.achievedAt = ZonedDateTime.parse(achievedAt, DateTimeFormatter.ISO_DATE_TIME);
     }
 
-    public LocalDateTime getAchievedAt() {
+    public ZonedDateTime getAchievedAt() {
         return achievedAt;
     }
 }

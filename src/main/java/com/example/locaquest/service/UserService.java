@@ -54,7 +54,7 @@ public class UserService {
         redisComponent.deletePreregisterUser(email);
         redisComponent.saveAuthToken(token);
         User registerdUser = userRepository.save(user);
-        userStatisticRepository.save(new UserStatistic(registerdUser.getUserId(), registerdUser.getCreatedAt().toLocalDate()));
+        userStatisticRepository.save(new UserStatistic(registerdUser.getUserId(), registerdUser.getCreatedAt().toLocalDate().toString()));
         return registerdUser;
     }
 

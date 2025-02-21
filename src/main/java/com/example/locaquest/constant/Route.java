@@ -27,7 +27,6 @@ public class Route {
     
     public static final String USER_STATUS = "/user-status";
     public static final String USER_STATUS_START = "/start";
-    public static final String USER_STATUS_ATTEND = "/attend";
     public static final String USER_STATUS_ACHIEVE = "/achieve";
     
     public static final String ACHIEVEMENT = "/achievement";

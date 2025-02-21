@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.locaquest.dto.status.UserAchievementData;
+import com.example.locaquest.dto.status.UserStatisticData;
 import com.example.locaquest.model.Achievement;
 import com.example.locaquest.model.UserAchievement;
 import com.example.locaquest.model.UserAchievementKey;
@@ -35,8 +36,13 @@ public class UserStatusService {
         return achievementList;
     }
     
-    public List<UserStatistic> getUserStatistics(int userId) {
-        return userStatisticRepository.findByIdUserId(userId);
+    public List<UserStatisticData> getUserStatistics(int userId) {
+    	List<UserStatistic> datas = userStatisticRepository.findByIdUserId(userId);
+    	List<UserStatisticData> res = new ArrayList<>();
+    	for(UserStatistic data : datas) {
+    		res.add(new UserStatisticData(data));
+    	}
+        return res;
     }
 
     public List<UserAchievementData> getUserAchievements(int userId) {
