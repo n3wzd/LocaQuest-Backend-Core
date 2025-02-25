@@ -40,7 +40,7 @@ public class UserStatusController {
         UserStatusStartResponse result = new UserStatusStartResponse();
         result.setUserStatisticList(userStatstic);
         result.setUserAchievementList(userAchievementList);
-        result.setAttend(isAttend);
+        result.setAttended(isAttend);
         LogUtil.info(String.format("successfully: userId=%s, date=%s", userId, date), filePath, Route.USER_STATUS_START, request);
         return ResponseEntity.ok(result);
     } 

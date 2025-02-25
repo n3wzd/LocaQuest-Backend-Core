@@ -10,5 +10,5 @@ import lombok.Setter;
 public class UserStatusStartResponse {
     private List<UserStatisticData> userStatisticList;
     private List<UserAchievementData> userAchievementList;
-    private boolean isAttend;
+    private boolean attended;
 }
