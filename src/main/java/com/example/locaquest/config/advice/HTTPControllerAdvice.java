@@ -9,19 +9,19 @@ import com.example.locaquest.controller.UserController;
 import com.example.locaquest.controller.PlaceController;
 import com.example.locaquest.controller.UserStatusController;
 import com.example.locaquest.controller.ActivityController;
-import com.example.locaquest.controller.ClientController;
 import com.example.locaquest.exception.JavaMailException;
 import com.example.locaquest.exception.EmailExistsException;
 import com.example.locaquest.exception.EmailNotExistsException;
 import com.example.locaquest.exception.ServiceException;
 import com.example.locaquest.exception.WrongPasswordException;
+import com.example.locaquest.exception.FileNotExistsException;
 import com.example.locaquest.util.LogUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.example.locaquest.exception.TokenException;
 
-@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class, UserStatusController.class, ActivityController.class, ClientController.class })
+@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class, UserStatusController.class, ActivityController.class })
 public class HTTPControllerAdvice {
 
     final private String filePath = "config.HTTPControllerAdvice";
@@ -60,6 +60,12 @@ public class HTTPControllerAdvice {
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
         LogUtil.warn(e.toString(), filePath, "IllegalArgumentException", request);
         return ResponseEntity.badRequest().body("입력 양식이 잘못되었습니다.");
+    }
+    
+    @ExceptionHandler(FileNotExistsException.class)
+    public ResponseEntity<String> handleFileNotExistsException(FileNotExistsException e, HttpServletRequest request) {
+        LogUtil.warn(e.toString(), filePath, "FileNotExistsException", request);
+        return ResponseEntity.badRequest().body("파일이 존재하지 않습니다.");
     }
 
     @ExceptionHandler(ServiceException.class)

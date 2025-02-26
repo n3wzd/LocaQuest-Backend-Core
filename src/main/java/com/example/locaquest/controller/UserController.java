@@ -7,7 +7,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.locaquest.constant.Route;
 import com.example.locaquest.dto.user.EmailRequest;
@@ -101,6 +103,14 @@ public class UserController {
         int userId = tokenService.getUserId();
         userService.deleteUser(userId, passwordRequest.getPassword());
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_DELETE, request);
+        return ResponseEntity.ok("");
+    }
+    
+    @PostMapping(Route.USER_PROFILE_IMAGE_UPLOAD)
+    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file, HttpServletRequest request) {
+    	int userId = tokenService.getUserId();
+        userService.saveProfileImage(userId, file);
+        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_PROFILE_IMAGE_UPLOAD, request);
         return ResponseEntity.ok("");
     }
 }

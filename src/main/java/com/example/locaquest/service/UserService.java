@@ -2,10 +2,12 @@ package com.example.locaquest.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 
 import com.example.locaquest.component.EmailComponent;
+import com.example.locaquest.component.FileComponent;
 import com.example.locaquest.component.TokenComponent;
 import com.example.locaquest.component.RedisComponent;
 import com.example.locaquest.dto.user.LoginRequest;
@@ -31,6 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenComponent tokenComponent;
     private final RedisComponent redisComponent;
+    private final FileComponent fileComponent;
 
     public void preregisterUser(User user) {
         if (isEmailExists(user.getEmail())) {
@@ -130,6 +133,10 @@ public class UserService {
         if(data != null) {
             throw new AlreadyVerifiedException(token);
         }
+    }
+    
+    public void saveProfileImage(int userId, MultipartFile file) {
+    	fileComponent.saveProfileImage(file, userId);
     }
     
     private boolean isEmailExists(String email) {
