@@ -66,4 +66,4 @@ kafka:
   topic:
     user-param-gain: ${SPRING_KAFKA_TOPIC_USER_PARAM_GAIN}
 public:
-  user-profile: src/main/resources/static/user-profile/
+  user-profile: uploads/user-profile/

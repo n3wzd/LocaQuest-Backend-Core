@@ -23,9 +23,6 @@ public class TokenComponent {
     @Value("${jwt.expiration.access}")
     private int JWT_EXPIRATION_ACCESS;
 
-    /*@Value("${jwt.expiration.refresh}")
-    private int JWT_EXPIRATION_REFRESH;*/
-
     @Value("${jwt.expiration.auth}")
     private int JWT_EXPIRATION_AUTH;
 

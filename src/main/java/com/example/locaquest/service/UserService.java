@@ -139,6 +139,10 @@ public class UserService {
     	fileComponent.saveProfileImage(file, userId);
     }
     
+    public String getProfileImagePath(int userId) {
+    	return fileComponent.getProfileImagePath(userId);
+    }
+    
     private boolean isEmailExists(String email) {
         return userRepository.existsByEmail(email);
     }

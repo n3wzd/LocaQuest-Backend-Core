@@ -30,4 +30,7 @@ public class Route {
     
     public static final String ACHIEVEMENT = "/achievement";
     public static final String ACHIEVEMENT_ALL = "/achievement/all";
+    
+    public static final String RESOURCE = "/resource";
+    public static final String RESOURCE_USER_PROFILE = "/user-profile";
 }
