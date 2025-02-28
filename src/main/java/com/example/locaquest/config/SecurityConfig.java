@@ -44,7 +44,9 @@ public class SecurityConfig {
             
             Route.ACTIVITY + Route.ACTIVITY_INIT,
             Route.USER_STATUS + Route.USER_STATUS_START,
-            Route.USER_STATUS + Route.USER_STATUS_ACHIEVE
+            Route.USER_STATUS + Route.USER_STATUS_ACHIEVE,
+            
+            Route.TEST + Route.TEST_GAIN_USE_PARAM
         );
 
         http

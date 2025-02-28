@@ -33,4 +33,8 @@ public class Route {
     
     public static final String RESOURCE = "/resource";
     public static final String RESOURCE_USER_PROFILE = "/user-profile";
+    
+    public static final String TEST = "/test";
+    public static final String TEST_LOGIN = "/login";
+    public static final String TEST_GAIN_USE_PARAM = "/gain-user-param";
 }

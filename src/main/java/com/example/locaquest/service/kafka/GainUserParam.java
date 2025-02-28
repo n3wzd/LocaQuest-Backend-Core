@@ -11,14 +11,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 
 import com.example.locaquest.dto.status.UserParamGain;
-import com.example.locaquest.repogitory.UserStatisticRepository;
 import com.example.locaquest.service.UserStatusService;
 import com.example.locaquest.util.LogUtil;
 
 @Service
 @RequiredArgsConstructor
 public class GainUserParam {
-    private final UserStatisticRepository userStatisticRepository;
     private final UserStatusService userStatusService;
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -27,16 +25,10 @@ public class GainUserParam {
     public void consumeGainUserParam(String message, Acknowledgment acknowledgment) {
         try {
             UserParamGain paramGain = objectMapper.readValue(message, UserParamGain.class);
-            int userId = paramGain.getUserId();
-            String date = paramGain.getDate();
-            int exp = paramGain.getExp();
-            int steps = paramGain.getSteps();
-            int distance = paramGain.getDistance();
-            userStatusService.updateAttend(userId, date);
-            if(userStatisticRepository.gainParam(userId, date, exp, steps, distance) == 1) {
-            	LogUtil.info(String.format("successfully: userId=%s, date=%s, exp=%d, steps=%d, distance=%d", userId, date, exp, steps, distance), "service.kafka.GainUserParam", "consumeGainUserParam");
+            if(userStatusService.gainParam(paramGain)) {
+            	LogUtil.info(String.format("successfully: %s", paramGain.toString()), "service.kafka.GainUserParam", "consumeGainUserParam");
             } else {
-            	LogUtil.warn(String.format("DB failed. unknown userId: %s", userId), "service.kafka.GainUserParam", "consumeGainUserParam");
+            	LogUtil.warn(String.format("DB failed. unknown userId: %s", paramGain.getUserId()), "service.kafka.GainUserParam", "consumeGainUserParam");
             }
         } catch(JsonProcessingException e) {
         	LogUtil.warn(String.format("GainUserParam json parsing failed: %s", e.toString()), "service.kafka.GainUserParam", "consumeGainUserParam");

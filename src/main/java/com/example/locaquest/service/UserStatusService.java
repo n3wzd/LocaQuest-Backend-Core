@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.locaquest.dto.status.UserAchievementData;
+import com.example.locaquest.dto.status.UserParamGain;
 import com.example.locaquest.dto.status.UserStatisticData;
 import com.example.locaquest.model.Achievement;
 import com.example.locaquest.model.UserAchievement;
@@ -17,6 +18,7 @@ import com.example.locaquest.repogitory.UserAchievementRepository;
 import com.example.locaquest.repogitory.UserStatisticRepository;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -67,5 +69,16 @@ public class UserStatusService {
         userAchv.setId(new UserAchievementKey(userId, achvId));
         userAchv.setAchievedAt(achievedAt);
         userAchievementRepository.save(userAchv);
+    }
+    
+    @Transactional
+    public boolean gainParam(UserParamGain paramGain) {
+        int userId = paramGain.getUserId();
+        String date = paramGain.getDate();
+        int exp = paramGain.getExp();
+        int steps = paramGain.getSteps();
+        int distance = paramGain.getDistance();
+        updateAttend(userId, date);
+        return userStatisticRepository.gainParam(userId, date, exp, steps, distance) == 1;
     }
 }
