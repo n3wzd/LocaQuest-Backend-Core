@@ -26,7 +26,9 @@ public class GainUserParam {
         try {
             UserParamGain paramGain = objectMapper.readValue(message, UserParamGain.class);
             if(userStatusService.gainParam(paramGain)) {
-            	LogUtil.info(String.format("successfully: %s", paramGain.toString()), "service.kafka.GainUserParam", "consumeGainUserParam");
+            	LogUtil.info(String.format("successfully: userId=%d, date=%s, exp=%d, steps=%d, distance=%d", 
+            			paramGain.getUserId(), paramGain.getDate(), paramGain.getExp(), paramGain.getSteps(), paramGain.getDistance()),
+            			"service.kafka.GainUserParam", "consumeGainUserParam");
             } else {
             	LogUtil.warn(String.format("DB failed. unknown userId: %s", paramGain.getUserId()), "service.kafka.GainUserParam", "consumeGainUserParam");
             }
