@@ -107,10 +107,18 @@ public class UserController {
     }
     
     @PostMapping(Route.USER_PROFILE_IMAGE_UPLOAD)
-    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseEntity<?> uploadProfileImage(@RequestPart("file") MultipartFile file, HttpServletRequest request) {
     	int userId = tokenService.getUserId();
         userService.saveProfileImage(userId, file);
         LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_PROFILE_IMAGE_UPLOAD, request);
+        return ResponseEntity.ok("");
+    }
+    
+    @PostMapping(Route.USER_PROFILE_IMAGE_DELETE)
+    public ResponseEntity<?> deleteProfileImage(HttpServletRequest request) {
+    	int userId = tokenService.getUserId();
+        userService.deleteProfileImage(userId);
+        LogUtil.info(String.format("successfully: userId=%s", userId), filePath, Route.USER_PROFILE_IMAGE_DELETE, request);
         return ResponseEntity.ok("");
     }
 }

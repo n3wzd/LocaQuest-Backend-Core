@@ -40,6 +40,11 @@ public class FileComponent {
         return userProfilePath + Integer.toString(userId) + ".jpg";
     }
 	
+	public void deleteProfileImage(int userId) {
+		File file = new File(getProfileImagePath(userId));
+		file.delete();
+	}
+	
 	private boolean isValidImage(MultipartFile file) {
 	    try {
 	        BufferedImage image = ImageIO.read(file.getInputStream());

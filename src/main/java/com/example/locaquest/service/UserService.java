@@ -147,6 +147,10 @@ public class UserService {
     	return fileComponent.getProfileImagePath(userId);
     }
     
+    public void deleteProfileImage(int userId) {
+    	fileComponent.deleteProfileImage(userId);
+    }
+    
     private boolean isEmailExists(String email) {
         return userRepository.existsByEmail(email);
     }

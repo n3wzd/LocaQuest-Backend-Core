@@ -19,6 +19,7 @@ public class Route {
     public static final String USER_DELETE = "/delete";
     public static final String USER_PROFILE_IMAGE_GET = "/profile-image/get";
     public static final String USER_PROFILE_IMAGE_UPLOAD = "/profile-image/upload";
+    public static final String USER_PROFILE_IMAGE_DELETE = "/profile-image/delete";
     
     public static final String TEMPLATE = "/template";
     public static final String TEMPLATE_REGISTER_ACCREPT = "/register/accept";

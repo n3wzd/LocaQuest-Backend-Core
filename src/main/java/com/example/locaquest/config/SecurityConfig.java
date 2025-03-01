@@ -41,6 +41,7 @@ public class SecurityConfig {
             Route.USER + Route.USER_UPDATE_PASSWORD,
             Route.USER + Route.USER_UPDATE_PASSWORD_MAIL,
             Route.USER + Route.USER_UPDATE_PASSWORD_VERIFIED, 
+            Route.RESOURCE + Route.RESOURCE_USER_PROFILE + "/**",
             
             Route.ACTIVITY + Route.ACTIVITY_INIT,
             Route.USER_STATUS + Route.USER_STATUS_START,
