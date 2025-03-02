@@ -38,7 +38,6 @@ src/
  ├── controller/   # 클라이언트 요청 응답
  ├── dto/          # Data Transfer Object 정의
  ├── exception/    # 예외 처리 클래스
- ├── external/     # 외부 API 요청
  ├── lib/          # 외부 라이브러리 래퍼
  ├── model/        # 엔티티, 도메인 모델
  ├── repository/   # DB 상호작용

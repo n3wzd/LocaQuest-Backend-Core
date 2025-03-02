@@ -4,10 +4,6 @@ public class Route {
     public static final String ACTIVITY = "/activity";
     public static final String ACTIVITY_INIT = "/init";
     
-    public static final String PLACE = "/places";
-    public static final String PLACE_SEARCH = "/search";
-    public static final String PLACE_ROUTE = "/route";
-    
     public static final String USER = "/users";
     public static final String USER_REGISTER_MAIL= "/register/send-auth-mail";
     public static final String USER_REGISTER_VERIFIED = "/register/check-verified";

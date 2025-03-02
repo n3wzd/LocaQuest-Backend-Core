@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.example.locaquest.controller.UserController;
-import com.example.locaquest.controller.PlaceController;
 import com.example.locaquest.controller.ResourceController;
 import com.example.locaquest.controller.TestController;
 import com.example.locaquest.controller.UserStatusController;
@@ -23,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import com.example.locaquest.exception.TokenException;
 
-@ControllerAdvice(assignableTypes = { UserController.class, PlaceController.class, UserStatusController.class, ActivityController.class, ResourceController.class, TestController.class })
+@ControllerAdvice(assignableTypes = { UserController.class, UserStatusController.class, ActivityController.class, ResourceController.class, TestController.class })
 public class HTTPControllerAdvice {
 
     final private String filePath = "config.HTTPControllerAdvice";
